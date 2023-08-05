@@ -1,0 +1,25 @@
+// app global css in SCSS form
+@import './typography/typography.scss';
+
+@font-face {
+    font-family: customFont;
+    src: url('./fonts//Lato-Regular.ttf');
+}
+
+@font-face {
+    font-family: customBoldFont;
+    src: url('./fonts/Lato-Bold.ttf');
+}
+
+* {
+    font-family: 'customFont';
+}
+
+
+.my-font {
+    font-family: 'customFont';
+}
+
+.my-bold-font {
+    font-family: 'customBoldFont';
+}
