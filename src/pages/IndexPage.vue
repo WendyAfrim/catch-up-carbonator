@@ -265,6 +265,30 @@ import { Todo, Meta } from 'components/models';
 import ExampleComponent from 'components/ExampleComponent.vue';
 import { ref, computed } from 'vue';
 
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
+
+const querySnapshot = await getDocs(collection(db, 'Users'));
+querySnapshot.forEach(async (user) => {
+  const {first, last} = user.get('name');
+  console.log(`first name: ${first}, last name: ${last}`)
+  const isAvailable = user.get('isAvailable')
+  console.log(`status: ${isAvailable}`);
+  const currentProject = user.get('currentProject')
+  console.log(`Current Project name: ${currentProject.name}`);
+  const userSkills = await getDocs(collection(db, `Users/${user.id}/skills`));
+  userSkills.forEach((skills)=>{
+    const hardSkills= skills.get('hardSkills');
+    hardSkills.forEach((hardSkill: any) => {
+      const {name, level, nb_exp} = hardSkill;
+      console.log(`name: ${name}, level: ${level}, nb_exp: ${nb_exp}`);
+
+    })
+  })
+});
+
+
+
 const leftDrawerOpen = ref(false)
 
 function toggleLeftDrawer() {
