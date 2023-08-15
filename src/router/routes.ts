@@ -4,9 +4,23 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') },
-              { path: '/test', component: () => import('pages/ErikPage.vue') }                   
-              ],
+    children: [
+        { path: '', component: () => import('pages/IndexPage.vue'), meta: {
+            breadcrumb: [
+              {name: 'Accueil', link: '/'}
+            ]
+      }},
+        { path: '/challenge', component: () => import('pages/ChallengePage.vue'), meta: {
+            breadcrumb: [
+            {name: 'Challenge du mois', link: '/challenge'}
+            ]
+      }}, 
+        { path: '/skills', component: () => import('pages/SkillsForm.vue'), meta: {
+          breadcrumb: [
+            {name: 'Mes compétences', link: '/skills'}
+          ]
+        } },                  
+      ],
   },
 
   // Always leave this as last one,

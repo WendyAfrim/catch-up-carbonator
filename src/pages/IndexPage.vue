@@ -4,62 +4,49 @@
     <div class="row">
       <div class="col-12 col-md-4">
         <div class="q-pa-md">
-          <q-card class="my-card bg-white text-grey shadow-4 q-pa-md">
-            <q-card-section horizontal>
-              <q-card-section class="q-pt-xs">
-                <div class="row">
-                  <h5>Opportunités</h5>
-                  <span class="icon icon__green material-icons">
-                    star_rate
-                  </span>
-                </div>
-                <span class="kpi__content">124</span>
-              </q-card-section>
-            </q-card-section>
-          </q-card>
+          <Card>
+            <div class="row">
+              <h5>Opportunités</h5>
+              <span class="icon icon__green material-icons">
+                star_rate
+              </span>
+            </div>
+            <span class="kpi__content">124</span>
+          </Card>
         </div>
       </div>
       <div class="col-12 col-md-4">
         <div class="q-pa-md">
-          <q-card class="my-card bg-white text-grey shadow-4 q-pa-md">
-            <q-card-section horizontal>
-              <q-card-section class="q-pt-xs">
-                <div class="row">
-                  <h5>Contributions</h5>
-                  <span class="icon icon__red material-icons">
-                    switch_access_shortcut
-                  </span>
-                </div>
-
-                <div class="kpi__content">
-                  0
-                </div>
-              </q-card-section>
-            </q-card-section>
-          </q-card>
+          <Card>
+            <div class="row">
+              <h5>Contributions</h5>
+              <span class="icon icon__red material-icons">
+                switch_access_shortcut
+              </span>
+            </div>
+            <div class="kpi__content">
+              0
+            </div>
+          </Card>
         </div>
       </div>
       <div class="col-12 col-md-4">
         <div class="q-pa-md">
-          <q-card class="my-card bg-white text-grey shadow-4 q-pa-md">
-            <q-card-section horizontal>
-              <q-card-section class="q-pt-xs">
-                <div class="row">
-                  <h5>Progression</h5>
-                  <span class="icon icon__grey material-icons">
-                    timeline
-                  </span>
+          <Card>
+            <div class="row">
+              <h5>Progression</h5>
+              <span class="icon icon__grey material-icons">
+                timeline
+              </span>
+            </div>
+            <div class="q-pt-md">
+              <q-linear-progress size="25px" :value="progress1" color="green">
+                <div class="absolute-full flex flex-center">
+                  <q-badge color="white" text-color="green" :label="progressLabel1" />
                 </div>
-                <div class="q-pt-md">
-                  <q-linear-progress size="25px" :value="progress1" color="green">
-                    <div class="absolute-full flex flex-center">
-                      <q-badge color="white" text-color="green" :label="progressLabel1" />
-                    </div>
-                  </q-linear-progress>
-                </div>
-              </q-card-section>
-            </q-card-section>
-          </q-card>
+              </q-linear-progress>
+            </div>
+          </Card>
         </div>
       </div>
     </div>
@@ -67,32 +54,29 @@
       <!-- Challenge du mois -->
       <div class="col-12 col-md-6">
         <div class="q-pa-md">
-          <q-card class="my-card bg-grey-9 text-white shadow-4 q-pa-md">
-            <q-card-section horizontal>
-              <q-card-section class="q-pt-xs">
-                <h5 class="text-white">Challenge du mois</h5>
-                <div class="text-caption">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                  dolore magna aliqua.
-                  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. sed do eiusmod tempor incididunt ut
-                  labore et dolore magna aliqua.
-                  sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. sed do eiusmod tempor incididunt ut
-                  labore et dolore magna aliqua.
-                  sed do eiusmod tempor incididunt ut labore.
-                </div>
-              </q-card-section>
-            </q-card-section>
-
-            <div class="q-pa-md q-gutter-sm">
-              <q-btn color="green" text-color="white" label="En savoir plus" />
+          <Card>
+            <h5 class="text-black">Challenge du mois</h5>
+            <div class="text-caption">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+              dolore magna aliqua.
+              sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. sed do eiusmod tempor incididunt ut
+              labore et dolore magna aliqua.
+              sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. sed do eiusmod tempor incididunt ut
+              labore et dolore magna aliqua.
+              sed do eiusmod tempor incididunt ut labore.
             </div>
-          </q-card>
+            <div class="q-pt-md">
+              <router-link to="/challenge">
+                <q-btn color="green" text-color="white" label="En savoir plus" />
+              </router-link>
+            </div>
+          </Card>
         </div>
       </div>
       <!-- Projets -->
       <div class="col-12 col-md-6">
         <div class="q-pa-md">
-          <q-card class="my-card bg-white text-grey shadow-4 q-pa-md">
+          <Card>
             <q-card-section horizontal>
               <q-card-section class="q-pt-xs">
                 <h5>Mon projet actuel</h5>
@@ -108,7 +92,7 @@
             <div class="q-pa-md q-gutter-sm">
               <q-btn color="green" text-color="white" label="Details" />
             </div>
-          </q-card>
+          </Card>
         </div>
       </div>
     </div>
@@ -118,33 +102,28 @@
       <!-- Carriere pro -->
       <div class="col-12 col-md-6">
         <div class="q-pa-md">
-          <q-card class="my-card bg-white text-grey shadow-4 q-pa-md">
-            <q-card-section horizontal>
-              <q-card-section class="q-pt-xs">
-                <h5>Ma carrière professionnelle</h5>
-                <div class="q-px-lg q-py-md">
-                  <q-timeline color="red">
+          <Card>
+            <h5>Ma carrière professionnelle</h5>
+            <div class="q-px-lg q-py-md">
+              <q-timeline color="red">
 
-                    <q-timeline-entry title="Developpeuse React" subtitle="Janvier 2021">
-                      <div>
-                        <q-toggle v-model="target1" label="Réaliser formation Angular" />
-                      </div>
-                    </q-timeline-entry>
+                <q-timeline-entry title="Developpeuse React" subtitle="Janvier 2021">
+                  <div>
+                    <q-toggle v-model="target1" label="Réaliser formation Angular" />
+                  </div>
+                </q-timeline-entry>
 
-                    <q-timeline-entry title="Product Owner" subtitle="Decembre 2024">
-                      <div>
-                        <q-toggle v-model="target1" label="Réaliser formation Angular" />
-                      </div>
-                    </q-timeline-entry>
-                  </q-timeline>
-                </div>
-              </q-card-section>
-            </q-card-section>
-
+                <q-timeline-entry title="Product Owner" subtitle="Decembre 2024">
+                  <div>
+                    <q-toggle v-model="target1" label="Réaliser formation Angular" />
+                  </div>
+                </q-timeline-entry>
+              </q-timeline>
+            </div>
             <div class="q-pa-md q-gutter-sm">
               <q-btn color="green" text-color="white" label="Details" />
             </div>
-          </q-card>
+          </Card>
         </div>
       </div>
       <div class="col-12 col-md-6">
@@ -156,7 +135,9 @@
                 <q-card-section horizontal>
                   <q-card-section class="q-pt-xs">
                     <h5>Mes compétences</h5>
-                    <q-btn color="green" text-color="white" label="Ajouter" />
+                    <router-link to="/skills">
+                      <q-btn color="green" text-color="white" label="Ajouter" />
+                    </router-link>
                   </q-card-section>
                 </q-card-section>
 
@@ -260,27 +241,8 @@
   </div>
 </template>
 <script setup lang="ts">
-import { Todo, Meta } from 'components/models';
-import ExampleComponent from 'components/ExampleComponent.vue';
-import {ref, computed, onMounted} from 'vue';
-
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../firebase';
-
-onMounted(async () => {
-  const querySnapshot = await getDocs(collection(db, 'Users'));
-  querySnapshot.forEach((user) => {
-    const {first, last} = user.get('name');
-    console.log(`first name: ${first}, last name: ${last}`)
-    const isAvailable = user.get('isAvailable')
-    console.log(`status: ${isAvailable}`);
-    const currentProject = user.get('currentProject')
-    console.log(`Current Project name: ${currentProject.name}`);
-  });
-
-})
-
-
+import { ref, computed } from 'vue';
+import Card from 'components/CardComponent.vue';
 
 const leftDrawerOpen = ref(false)
 

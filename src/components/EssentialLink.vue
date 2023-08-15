@@ -1,11 +1,6 @@
 <template>
-  <q-item
-    clickable
-  >
-    <q-item-section
-      v-if="icon"
-      avatar
-    >
+  <q-item clickable>
+    <q-item-section v-if="icon" avatar>
       <q-icon :name="icon" />
     </q-item-section>
 
@@ -33,7 +28,6 @@ withDefaults(defineProps<EssentialLinkProps>(), {
 </script>
 
 <style>
-
 a.test {
   color: rebeccapurple;
 }
