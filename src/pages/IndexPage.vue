@@ -11,7 +11,9 @@
                 star_rate
               </span>
             </div>
-            <span class="kpi__content">124</span>
+            <router-link to="/opportunities">
+              <span class="kpi__content">124</span>
+            </router-link>
           </Card>
         </div>
       </div>
