@@ -1,7 +1,7 @@
 <template>
-    <q-btn color="green" text-color="white" label="Ajouter" @click="open" />
+    <q-btn color="green" text-color="white" :label="label" @click="open" />
     <q-dialog v-model="icon">
-        <q-card>
+        <q-card style="width: 700px; max-width: 80vw;">
             <q-card-section class="row items-center q-px-md">
                 <slot name="header"></slot>
                 <q-space />
@@ -14,15 +14,23 @@
         </q-card>
     </q-dialog>
 </template>
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const icon = ref(false);
+const medium = ref(false);
 
 const emit = defineEmits(['open']);
 
 function open() {
     emit('open', icon.value = true);
 }
+
+const props = defineProps({
+    label: {
+        type: String
+    }
+})
+
 </script>
 <style></style>
