@@ -1,35 +1,44 @@
 <template>
-    <div class="q-pa-xl">
-        <h1>Offres d'emplois</h1>
-        <q-table title="Jobs" :rows="rows" :columns="columns" row-key="name" />
+    <div class="q-pa-md">
+        <h1>{{ title }}</h1>
+        <q-table title="Consultants" :rows="rows" :columns="columns" row-key="name" selection="multiple"
+            v-model:selected="selected" :filter="option" :filter-method="filterData">
+            <template v-slot:top>
+                <slot name="body"></slot>
+            </template>
+        </q-table>
     </div>
 </template>
-<script setup>
-const columns = [
-    {
-        name: 'name',
-        required: true,
-        label: 'Intitulé du poste',
-        align: 'left',
-        field: row => row.name,
-        format: val => `${val}`,
-        sortable: true
-    },
-    { name: 'client', label: 'Client', field: 'client' },
-    { name: 'begin_at', align: 'center', label: 'Date de début', field: 'begin_at', sortable: true },
-    { name: 'end_at', label: 'Date de fin', field: 'end_at', sortable: true },
-    { name: 'skills', label: 'Compétences requises', field: 'skills' },
-    { name: 'actions', label: 'Actions', field: 'actions' },
-]
+<script setup lang="ts">
+import { reactive, ref } from 'vue';
 
-const rows = [
-    {
-        name: 'Developpeur React',
-        client: 'Total',
-        begin_at: '15/09/2023',
-        end_at: '05/06/2024',
-        skills: 'React, Node JS',
-        actions: 87,
+const props = defineProps({
+    title: {
+        type: String
     },
-]
+    columns: {
+        type: Array
+    },
+    rows: {
+        type: Array
+    },
+    option: {
+        type: Array
+    }
+})
+
+const selected = ref([]);
+
+
+
+
+
+function filterData(rows, terms, cols, getCellValue) {
+    for (const term in terms) {
+        rows = rows.filter(row =>
+            (row[term] + '').toLowerCase().indexOf(terms[term].toLowerCase()) !== -1
+        )
+    }
+    return rows
+} 
 </script>

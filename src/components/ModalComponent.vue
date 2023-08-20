@@ -1,5 +1,8 @@
 <template>
-    <q-btn color="green" text-color="white" :label="label" @click="open" />
+    <!-- <q-btn color="green" text-color="white" :label="label" @click="open" /> -->
+    <span class="material-icons pointer cta" @click="open">
+        add_circle
+    </span>
     <q-dialog v-model="icon">
         <q-card style="width: 700px; max-width: 80vw;">
             <q-card-section class="row items-center q-px-md">
@@ -27,10 +30,17 @@ function open() {
 }
 
 const props = defineProps({
-    label: {
+    classCta: {
         type: String
     }
 })
 
 </script>
-<style></style>
+<style lang="scss">
+.cta {
+    font-size: 1.8em;
+    cursor: pointer;
+    margin-left: 0.5em;
+    color: white;
+}
+</style>

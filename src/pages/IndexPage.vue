@@ -1,5 +1,5 @@
 <template>
-  <ConsultantView></ConsultantView>
+  <!-- <ConsultantView></ConsultantView> -->
   <RhView></RhView>
 </template>
 <script setup lang="ts">
@@ -18,7 +18,7 @@ import RhView from 'pages/Dashboard/RhDashboard.vue'
   padding: 0.3em;
   color: white;
   border-radius: 10px;
-  margin-left: 3.7em;
+  // margin-left: 3.7em;
 
   &__green {
     background-color: $green;
@@ -28,8 +28,12 @@ import RhView from 'pages/Dashboard/RhDashboard.vue'
     background-color: $red;
   }
 
-  &__grey {
+  &__bg-grey {
     background-color: $grey;
+  }
+
+  &__grey {
+    color: $grey;
   }
 }
 

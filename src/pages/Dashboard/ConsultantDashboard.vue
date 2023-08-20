@@ -2,7 +2,7 @@
     <div class="q-px-xl">
         <!-- KPI -->
         <div class="row">
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-3">
                 <div class="q-pa-md">
                     <Card class="my-card bg-white text-grey shadow-4 q-pa-md">
                         <template #body>
@@ -12,14 +12,14 @@
                                     star_rate
                                 </span>
                             </div>
-                            <router-link to="/opportunities">
+                            <router-link to="/opportunities" class="link link__opportunities">
                                 <span class="kpi__content">124</span>
                             </router-link>
                         </template>
                     </Card>
                 </div>
             </div>
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-3">
                 <div class="q-pa-md">
                     <Card class="my-card bg-white text-grey shadow-4 q-pa-md">
                         <template #body>
@@ -36,13 +36,13 @@
                     </Card>
                 </div>
             </div>
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-3">
                 <div class="q-pa-md">
                     <Card class="my-card bg-white text-grey shadow-4 q-pa-md">
                         <template #body>
                             <div class="row">
                                 <h5>Progression</h5>
-                                <span class="icon icon__grey material-icons">
+                                <span class="icon icon__bg-grey material-icons">
                                     timeline
                                 </span>
                             </div>
@@ -52,6 +52,20 @@
                                         <q-badge color="white" text-color="green" :label="progressLabel1" />
                                     </div>
                                 </q-linear-progress>
+                            </div>
+                        </template>
+                    </Card>
+                </div>
+            </div>
+            <div class="col-12 col-md-3">
+                <div class="q-pa-md">
+                    <Card class="my-card bg-white text-grey shadow-4 q-pa-md">
+                        <template #body>
+                            <div class="row">
+                                <h5>Bagdes</h5>
+                                <span class="icon icon__bg-grey material-icons">
+                                    timeline
+                                </span>
                             </div>
                         </template>
                     </Card>
@@ -121,9 +135,9 @@
                         <div class="q-pa-md">
                             <q-card class="my-card bg-white shadow-4 q-pa-md">
                                 <q-card-section horizontal>
-                                    <q-card-section class="q-pt-xs">
+                                    <q-card-section class="q-pt-xs row">
                                         <h5>Mes compétences</h5>
-                                        <Modal label="Ajouter">
+                                        <Modal>
                                             <template #header>
                                                 <h1 class="text-h5">Ajouter vos compétences</h1>
                                             </template>
@@ -328,6 +342,16 @@ function loadSkills() {
 .kpi {
     &__content {
         font-size: 1.8em;
+    }
+}
+
+.link {
+    text-decoration: none;
+    color: black;
+
+    &__opportunities {
+        font-weight: 500;
+        border-radius: 8px;
     }
 }
 </style>
