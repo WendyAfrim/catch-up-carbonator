@@ -35,6 +35,7 @@ const props = defineProps({
     }
 })
 
+
 </script>
 <style lang="scss">
 .cta {

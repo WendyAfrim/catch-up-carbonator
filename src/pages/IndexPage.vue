@@ -1,6 +1,6 @@
 <template>
-  <ConsultantView></ConsultantView>
-  <!-- <RhView></RhView> -->
+  <!-- <ConsultantView></ConsultantView> -->
+  <RhView></RhView>
 </template>
 <script setup lang="ts">
 import ConsultantView from 'pages/Dashboard/ConsultantDashboard.vue'
