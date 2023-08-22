@@ -1,7 +1,11 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import * as process from "process";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut,
+  } from 'firebase/auth'
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -20,9 +24,25 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app)
+const monitorAuthState = async () => {
+  onAuthStateChanged(auth, user => {
+    if(user) {
+       console.log(user);
+    } else {
+      console.log('error')
+    }
+  })
+}
+const logout = async () => {
+  await signOut(auth);
+}
 const db = getFirestore(app);
 console.log('in index')
 
 export {
-  db
+  db,
+  auth,
+  monitorAuthState,
+  logout
 }
