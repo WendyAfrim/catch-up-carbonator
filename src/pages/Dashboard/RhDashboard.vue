@@ -171,9 +171,43 @@
                     <Card class="my-card bg-black text-white shadow-4 q-pa-md">
                         <template #body>
                             <div class="text-right">
-                                <span class="material-icons text-white pointer">
-                                    add_circle
-                                </span>
+                                <Modal>
+                                    <template #header>
+                                        <h1 class="text-h5">Ajouter une nouvelle formation</h1>
+                                    </template>
+                                    <template #body>
+                                        <span class="q-px-md">Veuillez renseigner toutes les informations relatives à
+                                            la formation
+                                        </span>
+                                        <div class="row">
+                                            <div class="col-12 col-md-12">
+                                                <div class="q-py-md q-px-md">
+                                                    <q-input standout="bg-green text-white" :dense="true" v-model="text"
+                                                        label="Nom de la formation" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 col-md-12">
+                                                <div class="q-py-md q-px-md">
+                                                    <q-input v-model="text" filled standout="bg-green text-white"
+                                                        label="Lien" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 col-md-12">
+                                                <div class="q-py-md q-px-md">
+                                                    <q-select standout="bg-green text-white" v-model="model"
+                                                        :options="options" label="Standard" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <q-btn color="green" label="Créer la formation" class="q-my-md"></q-btn>
+                                        </div>
+                                    </template>
+                                </Modal>
                             </div>
                             <div class="column items-center">
                                 <h5 class="text-white">Formations</h5>
@@ -187,7 +221,7 @@
             </div>
         </div>
         <!-- Consultants -->
-        <div class="q-py-xl">
+        <div class="q-pa-xl">
             <h1 class="text-h4 q-pb-md">Nos consultants</h1>
             <q-table title="Consultants" :rows="consultantsRows" :columns="consultantsColumns" row-key="name"
                 :filter="consultantsFilters" :filter-method="filterData">
@@ -247,77 +281,85 @@
             </q-table>
         </div>
         <!-- Projects -->
-        <div class="q-py-md">
+        <div class="q-px-xl">
             <div class="row">
-                <div class="col-12 col-md-6 q-pr-xl">
+                <div class="col-12 col-md-6 q-pr-xl q-pb-md">
                     <h1 class="text-h4 q-pb-md">Nos projets</h1>
-                    <q-table title="Consultants" :rows="projectsRows" :columns="projectsColumns" row-key="name"
-                        :filter="projectsFilters" :filter-method="filterData">
-                        <template v-slot:top>
-                            <q-tr>
-                                <q-td>
-                                </q-td>
-                                <q-td>
-                                    <q-input outlined v-model="projectsFilters.name" label="Filtre Projet" dense></q-input>
-                                </q-td>
-                                <q-td>
-                                    <q-input outlined v-model="projectsFilters.client" label="Filtre Client"
-                                        dense></q-input>
-                                </q-td>
-                                <q-td>
-                                    <q-input outlined v-model="projectsFilters.begin_at" label="Filtre Date de début"
-                                        dense></q-input>
-                                </q-td>
-                                <q-td>
-                                    <q-input outlined v-model="projectsFilters.techLead" label="Filtre Compétences"
-                                        dense></q-input>
-                                </q-td>
-                            </q-tr>
-
-                        </template>
-                        <template v-slot:header="props">
-                            <q-tr :props="props">
-                                <q-th auto-width />
-                                <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                                    {{ col.label }}
-                                </q-th>
-                            </q-tr>
-                        </template>
-
-                        <template v-slot:body="props">
-                            <q-tr :props="props">
-                                <q-td auto-width>
-                                    <q-btn size="sm" color="green" round dense @click="props.expand = !props.expand"
-                                        :icon="props.expand ? 'remove' : 'add'" />
-                                </q-td>
-                                <q-td v-for="col in props.cols" :key="col.name" :props="props">
-                                    {{ col.value }}
-                                </q-td>
-                            </q-tr>
-                            <q-tr v-show="props.expand" :props="props">
-                                <q-td colspan="100%">
-                                    <div class="text-left">
-                                        Besoins détaillés du projet : {{ props.row.skills }}
-                                        <br>
-                                        Exigences du client
-                                    </div>
-                                </q-td>
-                            </q-tr>
-                        </template>
-                    </q-table>
-                </div>
-                <div class="col-12 col-md-6">
-                    <h1 class="text-h4 q-pb-md">Nos parcours</h1>
-
                     <Card>
                         <template #body>
-                            <div class="q-pa-md q-gutter-md">
-                                <q-chip clickable @click="onClick" color="green" class="text-white">
-                                    Ajouter
-                                </q-chip>
+                            <div class="q-pa-md">
+                                <q-table title="Consultants" :rows="projectsRows" :columns="projectsColumns" row-key="name"
+                                    :filter="projectsFilters" :filter-method="filterData">
+                                    <template v-slot:top>
+                                        <q-tr>
+                                            <q-td>
+                                            </q-td>
+                                            <q-td>
+                                                <q-input outlined v-model="projectsFilters.name" label="Filtre Projet"
+                                                    dense></q-input>
+                                            </q-td>
+                                            <q-td>
+                                                <q-input outlined v-model="projectsFilters.client" label="Filtre Client"
+                                                    dense></q-input>
+                                            </q-td>
+                                            <q-td>
+                                                <q-input outlined v-model="projectsFilters.begin_at"
+                                                    label="Filtre Date de début" dense></q-input>
+                                            </q-td>
+                                            <q-td>
+                                                <q-input outlined v-model="projectsFilters.techLead"
+                                                    label="Filtre Compétences" dense></q-input>
+                                            </q-td>
+                                        </q-tr>
+
+                                    </template>
+                                    <template v-slot:header="props">
+                                        <q-tr :props="props">
+                                            <q-th auto-width />
+                                            <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                                                {{ col.label }}
+                                            </q-th>
+                                        </q-tr>
+                                    </template>
+
+                                    <template v-slot:body="props">
+                                        <q-tr :props="props">
+                                            <q-td auto-width>
+                                                <q-btn size="sm" color="green" round dense
+                                                    @click="props.expand = !props.expand"
+                                                    :icon="props.expand ? 'remove' : 'add'" />
+                                            </q-td>
+                                            <q-td v-for="col in props.cols" :key="col.name" :props="props">
+                                                {{ col.value }}
+                                            </q-td>
+                                        </q-tr>
+                                        <q-tr v-show="props.expand" :props="props">
+                                            <q-td colspan="100%">
+                                                <div class="text-left">
+                                                    Besoins détaillés du projet : {{ props.row.skills }}
+                                                    <br>
+                                                    Exigences du client
+                                                </div>
+                                            </q-td>
+                                        </q-tr>
+                                    </template>
+                                </q-table>
+                            </div>
+                        </template>
+                    </Card>
+                </div>
+                <div class="col-12 col-md-6 parcours">
+                    <h1 class="text-h4 q-pb-md">Nos parcours</h1>
+                    <Card>
+                        <template #body>
+                            <router-link to="/career">
+                                <span class="material-icons pointer cta" @click="open">
+                                    add_circle
+                                </span>
+                            </router-link>
+                            <div class="q-pa-md q-gutter-md parcours">
                                 <q-list bordered padding class="rounded-borders">
                                     <q-item-label header>Parcours personnalisés</q-item-label>
-
                                     <q-item clickable v-ripple>
                                         <q-item-section avatar top>
                                             <q-avatar icon="verified" color="green" text-color="white" />
@@ -457,5 +499,9 @@ function filterData(rows, terms, cols, getCellValue) {
 <style>
 .pointer {
     cursor: pointer;
+}
+
+.parcours span {
+    color: black;
 }
 </style>

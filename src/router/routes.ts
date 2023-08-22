@@ -30,6 +30,11 @@ const routes: RouteRecordRaw[] = [
           {name: 'Formations', link: '/trainings'}
         ]
       }},   
+      { path: '/career', component: () => import('pages/CareerPage.vue'), meta: {
+        breadcrumb: [
+          {name: 'Parcours', link: '/career'}
+        ]
+      }},  
       ],
   },
 
