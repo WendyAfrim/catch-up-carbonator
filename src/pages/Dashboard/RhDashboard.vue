@@ -236,8 +236,7 @@
                             <q-input outlined v-model="consultantsFilters.position" label="Filtre Position" dense></q-input>
                         </q-td>
                         <q-td>
-                            <q-input outlined v-model="consultantsFilters.begin_at" label="Filtre Date de début"
-                                dense></q-input>
+                            <q-input outlined v-model="consultantsFilters.level" label="Filtre Séniorité" dense></q-input>
                         </q-td>
                         <q-td>
                             <q-input outlined v-model="consultantsFilters.skills" label="Filtre Compétences"
@@ -247,7 +246,6 @@
                             <q-input outlined v-model="consultantsFilters.state" label="Filtre Statut" dense></q-input>
                         </q-td>
                     </q-tr>
-
                 </template>
                 <template v-slot:header="props">
                     <q-tr :props="props">
@@ -271,9 +269,8 @@
                     <q-tr v-show="props.expand" :props="props">
                         <q-td colspan="100%">
                             <div class="text-left">
-                                Besoins détaillés du projet : {{ props.row.skills }}
+                                Description du profil :
                                 <br>
-                                Exigences du client
                             </div>
                         </q-td>
                     </q-tr>
@@ -409,17 +406,16 @@ const selected = ref([]);
 
 const consultantsColumns = [
     {
-        name: 'firstname',
+        name: 'fullname',
         required: true,
-        label: 'Prénom',
+        label: 'Consultant',
         align: 'center',
-        field: 'firstname',
+        field: 'fullname',
         sortable: true
     },
-    { name: 'lastname', align: 'center', label: 'Nom', field: 'lastname', sortable: true },
     { name: 'email', align: 'center', label: 'Email', field: 'email', sortable: true },
     { name: 'position', align: 'center', label: 'Poste', field: 'position', sortable: true },
-    { name: 'begin_at', align: 'center', label: 'Date de début', field: 'begin_at', sortable: true },
+    { name: 'level', align: 'center', label: 'Séniorité', field: 'level', sortable: true },
     { name: 'skills', label: 'Compétences', field: 'skills' },
     { name: 'state', label: 'Statut', field: 'state' },
     { name: 'actions', label: 'Actions', field: 'actions' },
@@ -428,21 +424,19 @@ const consultantsColumns = [
 
 const consultantsRows = [
     {
-        lastname: 'Dupont',
-        firstname: "Jean",
+        fullname: ' Jean Dupont',
         email: "jean@carbon.com",
         position: "Developpeur React",
-        begin_at: "06/06/2025",
+        level: "Junior",
         skills: "JS, Vue",
         state: 'Libre',
         actions: '1%'
     },
     {
-        lastname: 'Ferreira',
-        firstname: "Kevin",
+        fullname: 'Kevin Ferreira',
         email: "kevin@carbon.com",
         position: "Developpeur Python",
-        begin_at: "06/06/2025",
+        level: "Confirmé",
         skills: "Python, Django",
         state: 'Occupé',
         actions: '1%'
@@ -453,7 +447,7 @@ const consultantsFilters = reactive({
     email: '',
     position: '',
     skills: '',
-    begin_at: '',
+    level: '',
     state: '',
 })
 

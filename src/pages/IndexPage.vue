@@ -1,10 +1,13 @@
 <template>
   <!-- <ConsultantView></ConsultantView> -->
-  <RhView></RhView>
+  <!-- <RhView></RhView> -->
+  <LeadTechView></LeadTechView>
 </template>
 <script setup lang="ts">
 import ConsultantView from 'pages/Dashboard/ConsultantDashboard.vue'
 import RhView from 'pages/Dashboard/RhDashboard.vue'
+import LeadTechView from './Dashboard/LeadTechDashboard.vue';
+
 </script>
 
 
@@ -18,7 +21,6 @@ import RhView from 'pages/Dashboard/RhDashboard.vue'
   padding: 0.3em;
   color: white;
   border-radius: 10px;
-  // margin-left: 3.7em;
 
   &__green {
     background-color: $green;
