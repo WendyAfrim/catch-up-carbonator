@@ -5,6 +5,12 @@ export enum Level {
   Senior = "senior"
 }
 
+export enum ROLE {
+  Consultant = 'Consultant',
+  HR = 'RH',
+  LeadTech = 'LeadTech'
+}
+
 export type SoftSkill = {
   name: string
 }
@@ -18,3 +24,4 @@ export type Skills = {
   hard?: Array<HardSkill>,
   soft?: Array<SoftSkill>
 }
+
