@@ -1,22 +1,25 @@
-import {collection, doc, getDoc, getDocs, setDoc} from "firebase/firestore";
-import {db} from "src/firebase/index";
+import {collection, doc, getDoc, getDocs, setDoc} from 'firebase/firestore';
+import {db} from 'src/firebase/index';
 
 export class Training {
   name: string;
   link: string;
   level: string;
-  constructor (name: string,
-               link: string,
-               level: string
-               ) {
+
+  constructor(name: string,
+              level: string,
+              link: string,
+  ) {
     this.name = name;
-    this.link = link;
     this.level = level;
+    this.link = link;
   }
+
   toString() {
     return this.name + ', ' + this.level + ', ' + this.link;
   }
 }
+
 const trainingConverter = {
   toFirestore: (training: Training) => {
     return {
@@ -28,24 +31,24 @@ const trainingConverter = {
   fromFirestore: (snapshot: any, options: any) => {
     const data = snapshot.data(options);
     return new Training(
-        data.name,
-        data.level,
-        data.link);
+      data.name,
+      data.level,
+      data.link);
   }
 };
-const createTraining = async (training:Training) => {
-    const trainingsRef = collection(db, 'trainings').withConverter(trainingConverter);
-    await setDoc(doc(trainingsRef, training.name), training);
+const createTraining = async (training: Training) => {
+  const trainingsRef = collection(db, 'trainings').withConverter(trainingConverter);
+  await setDoc(doc(trainingsRef, training.name), training);
 }
-const getTraining = async (uid:string) => {
+const getTraining = async (uid: string) => {
   const trainingRef = doc(db, 'trainings', uid).withConverter(trainingConverter);
   const trainingSnap = await getDoc(trainingRef);
-  if(trainingSnap.exists()){
+  if (trainingSnap.exists()) {
     const training = trainingSnap.data();
     console.log(trainingSnap.toString());
     return trainingSnap;
   } else {
-    console.log("No such training!");
+    console.log('No such training!');
   }
 }
 const getTrainings = async () => {

@@ -1,8 +1,8 @@
-import {collection, doc, DocumentData, getDoc, getDocs, setDoc, updateDoc} from "firebase/firestore";
-import {db} from "src/firebase/index";
+import {collection, doc, DocumentData, getDoc, getDocs, setDoc, updateDoc} from 'firebase/firestore';
+import {db} from 'src/firebase/index';
 
 type Skill = {
-  name : string
+  name: string
 }
 
 export class Opportunity {
@@ -13,14 +13,15 @@ export class Opportunity {
   leadTech: string;
   skills: Array<Skill>
   actions: string;
-  constructor (
-      post: string,
-      client: string,
-      description: string,
-      start_at: Date,
-      leadTech: string,
-      skills: Array<Skill>,
-      actions: string,
+
+  constructor(
+    post: string,
+    client: string,
+    description: string,
+    start_at: Date,
+    leadTech: string,
+    skills: Array<Skill>,
+    actions: string,
   ) {
     this.post = post;
     this.client = client;
@@ -31,6 +32,7 @@ export class Opportunity {
     this.actions = actions;
 
   }
+
   toString() {
     return this.post + ', ' + this.client + ', ' + this.description;
   }
@@ -51,28 +53,27 @@ const opportunityConverter = {
   fromFirestore: (snapshot: any, options: any) => {
     const data = snapshot.data(options);
     return new Opportunity(
-        data.post,
-        data.client,
-        data.description,
-        data.skills,
-        data.leadTech,
-        data.start_at,
-        data.actions,
-
+      data.post,
+      data.client,
+      data.description,
+      data.skills,
+      data.leadTech,
+      data.start_at,
+      data.actions,
     );
   }
 };
-const createOpportunity = async (opportunity:Opportunity) => {
-    const opportunitiesRef = collection(db, 'opportunities');
-    await setDoc(doc(opportunitiesRef, opportunity.post), opportunity);
+const createOpportunity = async (opportunity: Opportunity) => {
+  const opportunitiesRef = collection(db, 'opportunities');
+  await setDoc(doc(opportunitiesRef, opportunity.post), opportunity);
 }
-const getOpportunity = async (uid:string) => {
+const getOpportunity = async (uid: string) => {
   const opportunityRef = doc(db, 'opportunities', uid).withConverter(opportunityConverter);
   const opportunitySnap = await getDoc(opportunityRef);
-  if(opportunitySnap.exists()){
+  if (opportunitySnap.exists()) {
     return opportunitySnap.data();
   } else {
-    console.log("No such opportunity!");
+    console.log('No such opportunity!');
   }
 }
 const updateOpportunity = async (uid: string, updatedData: any) => {
@@ -80,8 +81,8 @@ const updateOpportunity = async (uid: string, updatedData: any) => {
   await updateDoc(opportunityRef, updatedData)
 }
 const getOpportunities = async () => {
-  const querySnapshot = await getDocs(collection(db, 'opportunities'));
-  const allOpportunity: DocumentData[] = [];
+  const querySnapshot = await getDocs(collection(db, 'opportunities').withConverter(opportunityConverter));
+  const allOpportunity: Array<Opportunity> = [];
   querySnapshot.forEach((doc) => {
     allOpportunity.push(doc.data());
   });

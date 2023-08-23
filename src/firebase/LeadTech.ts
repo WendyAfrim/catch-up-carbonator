@@ -1,7 +1,7 @@
-import {createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification} from "firebase/auth";
-import {collection, doc, DocumentData, getDoc, getDocs, setDoc, updateDoc, arrayUnion, arrayRemove} from 'firebase/firestore'
+import {createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword} from "firebase/auth";
+import {arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, setDoc, updateDoc} from 'firebase/firestore'
 import {auth, db} from "src/firebase/index";
-import {ROLE, HardSkill} from "src/firebase/Types";
+import {HardSkill, ROLE} from "src/firebase/Types";
 
 
 type Name = {
@@ -60,16 +60,6 @@ const leadTechConverter = {
             data.skills);
     }
 };
-const getLeadTech = async (uid: string) => {
-    const leadTechRef = doc(db, 'leadTechs', uid).withConverter(leadTechConverter);
-    const leadTechSnap = await getDoc(leadTechRef);
-    if (leadTechSnap.exists()) {
-        const leadTech = leadTechSnap.data();
-        return leadTech;
-    } else {
-        console.log("No such leadTech!");
-    }
-}
 const createLeadTechAccount = async (credentials: Credentials, leadTech: LeadTech) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, credentials.email, credentials.password);
@@ -82,6 +72,18 @@ const createLeadTechAccount = async (credentials: Credentials, leadTech: LeadTec
     } catch (error) {
         console.log(error)
     }
+}
+
+const getLeadTech = async (uid: string) => {
+  const leadTechRef = doc(db, 'leadTechs', uid).withConverter(leadTechConverter);
+  const leadTechSnap = await getDoc(leadTechRef);
+  if (leadTechSnap.exists()) {
+    const leadTech = leadTechSnap.data();
+    return leadTech;
+  } else {
+    console.log("No such leadTech!");
+    return null;
+  }
 }
 const leadTechLogin = async (credentials: Credentials) => {
     try {
@@ -136,9 +138,9 @@ const getLeadTechs = async () => {
 export {
     createLeadTechAccount,
     leadTechLogin,
-    getLeadTech,
     updateLeadTech,
     getLeadTechs,
+    getLeadTech,
     addSkills,
     removeSkills
 }
