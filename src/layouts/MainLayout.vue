@@ -88,7 +88,16 @@
     </q-drawer>
 
     <q-page-container>
-      <!-- <router-link to="/test">Test</router-link> -->
+      <div class="q-pa-md q-gutter-sm">
+        <q-breadcrumbs>
+          <q-breadcrumbs-el icon="home" to="/" />
+          <q-breadcrumbs-el label="Docs" icon="widgets" to="/start/pick-quasar-flavour" />
+          <q-breadcrumbs-el label="Breadcrumbs" icon="navigation" to="/vue-components/breadcrumbs" />
+          <q-breadcrumbs-el label="Build" icon="build" />
+        </q-breadcrumbs>
+        <!-- {{ metas }} -->
+      </div>
+      <!-- <router-link to="/challenge">Test</router-link> -->
       <router-view />
     </q-page-container>
   </q-layout>
@@ -104,7 +113,7 @@ const essentialLinks: EssentialLinkProps[] = [
   {
     title: 'Accueil',
     icon: 'school',
-    link: '/test'
+    link: '/'
   },
   {
     title: 'Mes compétences',
