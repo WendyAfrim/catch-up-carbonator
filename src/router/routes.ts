@@ -2,18 +2,32 @@ import {RouteRecordRaw} from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
   {
-    path: '/',
+    path: '/admin',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
-        path: '', component: () => import('pages/IndexPage.vue'), meta: {
+        path: '/Rh', component: () => import('pages/Dashboard/RhDashboard.vue'), meta: {
           breadcrumb: [
-            {name: 'Accueil', link: '/'}
+            {name: 'AccueilRh', link: '/Rh'}
           ]
         }
       },
       {
-        path: '/challenge/:uid', component: () => import('pages/ChallengePage.vue'), meta: {
+        path: '/Consultant', component: () => import('pages/Dashboard/ConsultantDashboard.vue'), meta: {
+          breadcrumb: [
+            {name: 'AccueilConsultant', link: '/Consultant'}
+          ]
+        }
+      },
+      {
+        path: '/LeadTech', component: () => import('pages/Dashboard/LeadTechDashboard.vue'), meta: {
+          breadcrumb: [
+            {name: 'AccueilLeadTech', link: '/LeadTech'}
+          ]
+        }
+      },
+      {
+        path: '/challenge', component: () => import('pages/ChallengePage.vue'), meta: {
           breadcrumb: [
             {name: 'Challenge du mois', link: '/challenge'}
           ]
@@ -47,23 +61,28 @@ const routes: RouteRecordRaw[] = [
           ]
         }
       },
-      {
-        path: '/login', component: () => import('pages/LoginPage.vue'), meta: {
-          breadcrumb: [
-            {name: 'Connexion', link: '/login'}
-          ]
-        }
-      }
-    ],
-
-    // component: () => (),
-    // children: [
-    //   { path: '/login', component: () => import('pages/LoginPage.vue'), meta: {
-    //     breadcrumb: [
-    //       {name: 'Connexion', link: '/login'}
-    //     ]
-    //   }},
-    // ]
+      // {
+      //   path: '/login', component: () => import('pages/LoginPage.vue'), meta: {
+      //     breadcrumb: [
+      //       {name: 'Connexion', link: '/login'}
+      //     ]
+      //   }
+      // },
+      // {
+      //   path: '/', component: () => import('pages/AuthPage.vue'), meta: {
+      //     breadcrumb: [
+      //       {name: 'Connexion', link: '/'}
+      //     ]
+      //   }
+      // }
+    ]
+  },
+  {
+    path: '/', component: () => import('pages/AuthPage.vue'), meta: {
+      breadcrumb: [
+        {name: 'Connexion', link: '/login'}
+      ]
+    }
   },
 
   // Always leave this as last one,

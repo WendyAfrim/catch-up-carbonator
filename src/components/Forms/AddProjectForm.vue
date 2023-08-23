@@ -1,5 +1,5 @@
 <template>
-  <q-form @submit="submitProject()">
+  <q-form @submit="submitProject()" v-if="!success">
     <div class="row">
       <div class="col-12 col-md-6">
         <div class="q-py-md q-px-md">
@@ -61,7 +61,7 @@
     <div class="row">
       <div class="col-12 col-md-12">
         <div class="q-py-md q-px-md">
-          <q-input standout="bg-green text-white" v-model="projectForm.position" label="Intitulé du poste"/>
+          <q-input standout="bg-green text-white" v-model="projectForm.position" label="Poste souhaité"/>
         </div>
       </div>
     </div>
@@ -100,13 +100,19 @@
              :icon="submit ? 'pending' : 'download'"></q-btn>
     </div>
   </q-form>
+  <div v-else>
+    <SuccessComponent>
+      <p>Votre projet a été crée avec succès ! </p>
+    </SuccessComponent>
+  </div>
 </template>
 <script setup lang="ts">
 import {reactive, ref} from 'vue';
-import {createProject, Project} from '../../firebase/Project';
+import {Project, createProject} from '../../firebase/Project';
 import {Level} from 'src/firebase/Types';
+import SuccessComponent from 'components/SuccessComponent.vue';
 
-const projectForm = reactive  ({
+const projectForm = reactive({
   name: '',
   client: '',
   description: '',
@@ -122,6 +128,7 @@ const projectForm = reactive  ({
 
 const emit = defineEmits(['submitProject']);
 const submit = ref(false);
+const success = ref(false);
 
 function submitProject() {
 
@@ -139,12 +146,13 @@ function submitProject() {
     '' // TODO verify if oui keep the field leadTech
   );
 
-  createProject(project).then( () =>{
+  createProject(project).then(() => {
+    success.value = true;
     console.log('success');
 
   })
     .catch((e) => {
-    console.log('error: ', e);
+      console.log('error: ', e);
 
     })
   console.log('project: ', project)
@@ -166,6 +174,9 @@ function addSkillsField(expand: boolean) {
 function deleteSkill(counter: number) {
   projectForm.skills.splice(counter, 1);
 }
+
+
+const date = ref('2023/08/25');
 
 </script>
 <style></style>

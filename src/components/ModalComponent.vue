@@ -1,8 +1,10 @@
 <template>
-
-  <span class="material-icons pointer cta" @click="open">
+  <span v-if="color === 'white' " class="material-icons pointer cta cta__white" @click="open">
         {{ logo }}
-    </span>
+  </span>
+  <span v-else-if="color === 'black' " class="material-icons pointer cta cta__black" @click="open">
+        {{ logo }}
+  </span>
   <q-dialog v-model="icon">
     <q-card style="width: 700px; max-width: 80vw;">
       <q-card-section class="row items-center q-px-md">
@@ -39,16 +41,13 @@ const props = defineProps({
   },
   logo: {
     type: String
+  },
+  color: {
+    type: String
   }
 })
 
 
 </script>
-<style lang="scss">
-.cta {
-  font-size: 1.8em;
-  cursor: pointer;
-  margin-left: 0.5em;
-  color: white;
-}
+<style lang="scss" scoped>
 </style>

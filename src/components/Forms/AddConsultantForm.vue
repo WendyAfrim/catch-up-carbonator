@@ -67,7 +67,6 @@
 import {reactive, ref} from 'vue';
 import {Consultant, createConsultantAccount} from '../../firebase/Consultant';
 import Success from 'components/SuccessComponent.vue';
-
 const consultantForm = reactive({
   firstname: '',
   lastname: '',
@@ -76,6 +75,7 @@ const consultantForm = reactive({
   state: ref(false),
   begin_at: ref('2023/01/01'),
 });
+
 
 
 const date = ref('2019/02/01');

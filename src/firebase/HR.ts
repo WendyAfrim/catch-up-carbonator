@@ -1,38 +1,45 @@
-import {createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword} from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword
+} from "firebase/auth";
 import {collection, doc, getDoc, setDoc, updateDoc} from 'firebase/firestore'
 import {auth, db} from "src/firebase/index";
 import {ROLE} from "src/firebase/Types";
 import {getConsultant} from "src/firebase/Consultant";
 
 
-type Name = {
-  first: string,
-  last: string
-}
+
 export type Credentials = {
   email: string,
   password: string
 }
 export class HR {
-  name: Name;
-  email?: string;
-  roles: ROLE;
-  constructor (name: Name,
-               email: string,
-               roles: ROLE) {
-    this.name = name;
+  firstName:string;
+  lastName:string;
+  email: string;
+  roles?: ROLE;
+  constructor (
+    firstName:string,
+    lastName:string,
+    email: string,
+    roles: ROLE.HR
+  ) {
+    this.firstName = firstName;
+    this.lastName = lastName;
     this.email = email;
     this.roles = ROLE.HR;
 
   }
   toString() {
-    return this.name.first + ', ' + this.name.last + ', ' + this.email;
+    return this.firstName + ', ' + this.lastName + ', ' + this.email;
   }
 }
-const consultantConverter = {
+const hrConverter = {
   toFirestore: (hr: HR) => {
     return {
-      name: hr.name,
+      firstName: hr.firstName,
       email: hr.email,
       roles: hr.roles
     };
@@ -40,52 +47,46 @@ const consultantConverter = {
   fromFirestore: (snapshot: any, options: any) => {
     const data = snapshot.data(options);
     return new HR(
-      data.name,
-      data.email, data.roles);
+      data.firstName,
+      data.lastName,
+      data.email,
+      ROLE.HR
+    );
   }
 };
 const getHR = async (uid:string) =>{
-  const hrRef = doc(db, 'users', uid).withConverter(consultantConverter);
+  const hrRef = doc(db, 'hrs', uid).withConverter(hrConverter);
   const hrSnap = await getDoc(hrRef);
   if(hrSnap.exists()){
     return hrSnap.data();
   } else {
-    console.log("No such consultant!");
+    console.log("No such HR!");
     return null;
   }
 }
-const createHrAccount = async (credentials: Credentials, hr:HR) => {
+const createHRAccount = async (credentials: Credentials, hr:HR) => {
   try{
     const userCredential = await createUserWithEmailAndPassword(auth, credentials.email, credentials.password);
-    if(userCredential?.user?.email){
-      await sendEmailVerification(userCredential.user)
-      hr.email = userCredential?.user?.email;
-      const usersRef = collection(db, 'hrs');
-      await setDoc(doc(usersRef, userCredential.user.uid), hr);
-    }
+    // await sendEmailVerification(userCredential.user);
+    hr.roles = ROLE.HR;
+    // await sendPasswordResetEmail(auth, credentials.email);
+    const usersRef = doc(db, 'hrs', userCredential.user.uid);
+    await setDoc(usersRef, {...hr});
+    const usersRoles = doc(db, 'roles', userCredential.user.uid);
+    await setDoc(usersRoles, {roles: ROLE.HR});
+
   } catch (error) {
     console.log(error)
   }
 }
-const consultantLogin = async (credentials: Credentials) => {
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
-    console.log('uid: ', userCredential.user.uid, 'providerId', 'emailVerified',userCredential.user.emailVerified);
 
-    return await getConsultant(userCredential.user.uid);
-  } catch (error) {
-    console.log(error)
-  }
-}
-const updateConsultant = async (uid: string, updatedData: any) => {
-  const consultantRef = doc(db, "users", uid);
+const updateHR = async (uid: string, updatedData: any) => {
+  const hrRef = doc(db, "users", uid);
 
-  await updateDoc(consultantRef, updatedData)
+  await updateDoc(hrRef, updatedData)
 }
 export {
-
-}
-
-export {
-  //return Consultant if OK, null if emails is not verified, in error case the value will be undefined
+  createHRAccount,
+  updateHR,
+  getHR,
 }

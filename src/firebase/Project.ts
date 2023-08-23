@@ -45,13 +45,13 @@ export class Project {
   toString() {
     return this.name + ', ' + this.description + ', ' + this.client;
   }
-
   public skillsName(): string {
-    if (this.skills) {
+    if(this.skills) {
       return this.skills?.map((skill) => {
         return skill.name
       }).join()
-    } else {
+    }
+    else {
       return ''
     }
   }
