@@ -259,11 +259,28 @@
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
 import { Todo, Meta } from 'components/models';
 import ExampleComponent from 'components/ExampleComponent.vue';
-import { ref, computed } from 'vue';
+import {ref, computed, onMounted} from 'vue';
+
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
+
+onMounted(async () => {
+  const querySnapshot = await getDocs(collection(db, 'Users'));
+  querySnapshot.forEach((user) => {
+    const {first, last} = user.get('name');
+    console.log(`first name: ${first}, last name: ${last}`)
+    const isAvailable = user.get('isAvailable')
+    console.log(`status: ${isAvailable}`);
+    const currentProject = user.get('currentProject')
+    console.log(`Current Project name: ${currentProject.name}`);
+  });
+
+})
+
+
 
 const leftDrawerOpen = ref(false)
 
@@ -288,6 +305,7 @@ const target1 = ref(false)
 const text = ref('');
 
 </script>
+
 
 <style lang="scss">
 .q-card {
