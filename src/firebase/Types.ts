@@ -11,17 +11,17 @@ export enum ROLE {
   LeadTech = 'LeadTech'
 }
 
-export type SoftSkill = {
-  name: string
-}
+// export type SoftSkill = {
+//   name: string
+// }
 export type HardSkill = {
   name: string,
   level: Level,
   nb_exp: number
 }
 
-export type Skills = {
-  hard?: Array<HardSkill>,
-  soft?: Array<SoftSkill>
-}
+// export type Skills = {
+//   hard?: Array<HardSkill>,
+//   soft?: Array<SoftSkill>
+// }
 
