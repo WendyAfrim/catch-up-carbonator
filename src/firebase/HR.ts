@@ -13,30 +13,6 @@ export type Credentials = {
   email: string,
   password: string
 }
-type Project = {
-  name: string,
-  start_at: string,
-  end_at: string,
-  position: string,
-  client: string,
-  feedback?: string
-}
-type Goal = {
-  name: string,
-  achieved: boolean
-}
-type Job = {
-  profession: string,
-  start_at: Date,
-  end_at: Date,
-  goals?: Array<Goal>
-}
-type Training = {
-  name: string,
-  link: string,
-  achieved: boolean
-}
-
 export class HR {
   name: Name;
   email?: string;
@@ -53,8 +29,6 @@ export class HR {
     return this.name.first + ', ' + this.name.last + ', ' + this.email;
   }
 }
-
-// Firestore data converter
 const consultantConverter = {
   toFirestore: (hr: HR) => {
     return {
@@ -74,11 +48,10 @@ const getHR = async (uid:string) =>{
   const hrRef = doc(db, 'users', uid).withConverter(consultantConverter);
   const hrSnap = await getDoc(hrRef);
   if(hrSnap.exists()){
-    const hr = hrSnap.data();
-    console.log(hr.toString());
-    return hr;
+    return hrSnap.data();
   } else {
     console.log("No such consultant!");
+    return null;
   }
 }
 const createHrAccount = async (credentials: Credentials, hr:HR) => {
@@ -88,9 +61,7 @@ const createHrAccount = async (credentials: Credentials, hr:HR) => {
       await sendEmailVerification(userCredential.user)
       hr.email = userCredential?.user?.email;
       const usersRef = collection(db, 'hrs');
-      const newHr = await setDoc(doc(usersRef, userCredential.user.uid), hr);
-      console.log('userCredential: ',userCredential.user);
-      console.log('newConsultant: ',newHr);
+      await setDoc(doc(usersRef, userCredential.user.uid), hr);
     }
   } catch (error) {
     console.log(error)
@@ -115,3 +86,6 @@ export {
 
 }
 
+export {
+  //return Consultant if OK, null if emails is not verified, in error case the value will be undefined
+}

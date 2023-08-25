@@ -1,5 +1,5 @@
-import {Skills} from "src/firebase/Types";
-import {collection, doc, getDoc, setDoc} from "firebase/firestore";
+import {HardSkill} from "src/firebase/Types";
+import {collection, doc, DocumentData, getDoc, getDocs, setDoc} from "firebase/firestore";
 import {db} from "src/firebase/index";
 
 export class Project {
@@ -8,7 +8,7 @@ export class Project {
   begin_at: Date;
   end_at: Date;
   description: string;
-  skills: Skills;
+  skills: Array<HardSkill>;
   need: string;
   leadTech: string;
   constructor (name: string,
@@ -16,7 +16,7 @@ export class Project {
                begin_at: Date,
                end_at: Date,
                description: string,
-               skills: Skills,
+               skills: Array<HardSkill>,
                need: string,
                leadTech: string,
                ) {
@@ -67,7 +67,7 @@ const getProject = async (uid:string) => {
   if(projectSnap.exists()){
     const project = projectSnap.data();
     console.log(projectSnap.toString());
-    return projectSnap;
+    return project;
   } else {
     console.log("No such project!");
   }
@@ -75,9 +75,21 @@ const getProject = async (uid:string) => {
 
 const createProject = async (project:Project) => {
     const projectsRef = collection(db, 'projects');
-    const newConsultant = await setDoc(doc(projectsRef, project.name), project);
+    await setDoc(doc(projectsRef, project.name), project);
+}
+
+const getProjects = async () => {
+  const querySnapshot = await getDocs(collection(db, 'projects'));
+  const allProject: DocumentData[] = [];
+  querySnapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+    allProject.push(doc.data());
+  });
+  return allProject;
 }
 
 export {
-    createProject,
+  createProject,
+  getProject,
+  getProjects
 }

@@ -1,8 +1,12 @@
-import {createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification} from "firebase/auth";
-import {collection, doc, DocumentData, getDoc, getDocs, setDoc, updateDoc} from 'firebase/firestore'
+import {
+    createUserWithEmailAndPassword,
+    sendEmailVerification,
+    signInWithEmailAndPassword,
+    signOut
+} from "firebase/auth";
+import {arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, setDoc, updateDoc} from 'firebase/firestore'
 import {auth, db} from "src/firebase/index";
-import {ROLE, Skills} from "src/firebase/Types";
-
+import {HardSkill, ROLE} from "src/firebase/Types";
 
 type Name = {
     first: string,
@@ -35,43 +39,34 @@ type Training = {
     link: string,
     achieved: boolean
 }
-
-// export type Consultant = {
-//   name?: Name,
-//   email: string | null,
-//   hired_as?: Date,
-//   begin_at?: Date,
-//   state?: string,
-//   skills?: Skills ,
-//   currentProject?: Project,
-//   projects?: Array<Project>,
-//   careers?: Array<Job>,
-//   training?: Array<Training>
-// } // remove unnecessary undefined from Consultant type
-
 export class Consultant {
     name: Name;
+    roles?: ROLE.Consultant;
     email?: string;
-    hired_as?: Date;
+    hired_as?: string;
     begin_at?: Date;
     state?: string;
-    skills?: Skills;
+    skills?: Array<HardSkill>;
     currentProject?: Project;
     projects?: Array<Project>;
     careers?: Array<Job>;
     training?: Array<Training>;
+    position?: string;
 
     constructor(name: Name,
                 email: string,
-                hired_as?: Date,
+                hired_as?: string,
                 begin_at?: Date,
                 state?: string,
-                skills?: Skills,
+                skills?: Array<HardSkill>,
                 currentProject?: Project,
                 projects?: Array<Project>,
                 careers?: Array<Job>,
-                training?: Array<Training>) {
+                training?: Array<Training>,
+                position?: string
+    ) {
         this.name = name;
+        this.roles = ROLE.Consultant;
         this.email = email;
         this.hired_as = hired_as;
         this.begin_at = begin_at;
@@ -81,18 +76,18 @@ export class Consultant {
         this.projects = projects;
         this.careers = careers;
         this.training = training;
+        this.position = position;
     }
-
     toString() {
         return this.name.first + ', ' + this.name.last + ', ' + this.state + ', ' + this.email;
     }
 }
 
-// Firestore data converter
 const consultantConverter = {
     toFirestore: (consultant: Consultant) => {
         return {
             name: consultant.name,
+            roles: consultant.roles,
             email: consultant.email,
             hired_as: consultant.hired_as,
             begin_at: consultant.begin_at,
@@ -108,6 +103,7 @@ const consultantConverter = {
         const data = snapshot.data(options);
         return new Consultant(
             data.name,
+            data.roles,
             data.email,
             data.hired_as,
             data.begin_at,
@@ -128,35 +124,31 @@ const getConsultant = async (uid: string) => {
         return consultant;
     } else {
         console.log("No such consultant!");
+        return null;
     }
 }
 const createConsultantAccount = async (credentials: Credentials, consultant: Consultant) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, credentials.email, credentials.password);
-        if (userCredential?.user?.email) {
-            await sendEmailVerification(userCredential.user)
-            // userCredential.user
-            consultant.email = userCredential?.user?.email;
-            const usersRef = collection(db, 'consultants');
-            const newConsultant = await setDoc(doc(usersRef, userCredential.user.uid), consultant);
-            console.log('userCredential: ', userCredential.user);
-            console.log('newConsultant: ', newConsultant);
-        }
+        await sendEmailVerification(userCredential.user);
+        consultant.email = credentials.email;
+        const usersRef = collection(db, 'consultants');
+        const newConsultant = await setDoc(doc(usersRef, userCredential.user.uid), consultant);
     } catch (error) {
         console.log(error)
     }
 }
 const consultantLogin = async (credentials: Credentials) => {
-    if (auth.currentUser) {
-        console.log('before login: ', auth.currentUser)
-    }
-    console.log('Non before login: ')
     try {
         const userCredential = await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
-        console.log('uid: ', userCredential.user.uid, 'providerId', 'emailVerified', userCredential.user.emailVerified);
-
-        return await getConsultant(userCredential.user.uid);
-    } catch (error) {
+        if(userCredential.user.emailVerified){
+          return await getConsultant(userCredential.user.uid);
+        } else {
+          await sendEmailVerification(userCredential.user);
+          return null;
+        }
+    }   catch (error) {
+      await signOut(auth);
         console.log(error)
     }
 }
@@ -165,18 +157,47 @@ const updateConsultant = async (uid: string, updatedData: any) => {
     await updateDoc(consultantRef, updatedData)
 }
 
+const addSkills = async (newSkills: Array<HardSkill> ) => {
+    const consultantUid = auth.currentUser?.uid;
+    if(consultantUid) {
+        const consultantRef = doc(db, 'consultants', consultantUid);
+        await updateDoc(consultantRef, {
+            skills: arrayUnion(...newSkills)
+        });
+    }
+}
+const removeSkills = async (newSkills: Array<HardSkill> ) => {
+    const consultantUid = auth.currentUser?.uid;
+    if(consultantUid) {
+        const consultantRef = doc(db, 'consultants', consultantUid);
+        await updateDoc(consultantRef, {
+            skills: arrayRemove(...newSkills)
+        });
+    }
+}
+
 const getConsultants = async () => {
-    const querySnapshot = await getDocs(collection(db, 'consultants'));
-    const allConsultants: DocumentData[] = [];
+    const querySnapshot = await getDocs(collection(db, 'consultants').withConverter(consultantConverter));
+    const allConsultants: Array<{
+        uid: string,
+        consultant: Consultant
+    }> = [];
     querySnapshot.forEach((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        allConsultants.push(doc.data())
+        allConsultants.push(
+            {
+                uid: doc.id,
+                consultant: doc.data()
+            }
+        );
     });
     return allConsultants;
 }
 export {
-  createConsultantAccount,
-  consultantLogin,
-  getConsultant,
-  updateConsultant
+    createConsultantAccount,
+    consultantLogin, //return Consultant if OK, null if emails is not verified, in error case the value will be undefined
+    getConsultant,
+    updateConsultant,
+    getConsultants, // return type: Array<{uid: string, consultant: Consultant}>
+    addSkills,
+    removeSkills
 }
