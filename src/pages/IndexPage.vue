@@ -1,7 +1,7 @@
 <template>
-  <!-- <ConsultantView></ConsultantView> -->
-  <!-- <RhView></RhView> -->
-  <LeadTechView></LeadTechView>
+  <ConsultantView></ConsultantView>
+  <!--  <RhView></RhView>-->
+  <!--  <LeadTechView></LeadTechView>-->
 </template>
 <script setup lang="ts">
 import ConsultantView from 'pages/Dashboard/ConsultantDashboard.vue'
@@ -11,7 +11,7 @@ import LeadTechView from './Dashboard/LeadTechDashboard.vue';
 </script>
 
 
-<style lang="scss">
+<style lang="scss" scoped>
 .q-card {
   border-radius: 15px;
 }

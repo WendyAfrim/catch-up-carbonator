@@ -13,13 +13,13 @@ import {
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: process.env.API_KEY,
-  authDomain: 'carbonator-1.firebaseapp.com',
-  projectId: 'carbonator-1',
-  storageBucket: 'carbonator-1.appspot.com',
-  messagingSenderId: process.env.messaging_Sender_Id,
-  appId: process.env.APP_ID,
-  measurementId: process.env.MEASUREMENT_ID
+  apiKey: "AIzaSyA_LgKWHfweniKHoK2UA3SPXdvGL3Dymzg",
+  authDomain: "carbonator-1.firebaseapp.com",
+  databaseURL: "https://carbonator-1-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "carbonator-1",
+  storageBucket: "carbonator-1.appspot.com",
+  messagingSenderId: "1012895642209",
+  appId: "1:1012895642209:web:09995a2b8f41b8554e3020"
 };
 
 // Initialize Firebase
