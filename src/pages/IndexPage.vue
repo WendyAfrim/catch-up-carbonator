@@ -1,7 +1,7 @@
 <template>
-  <ConsultantView></ConsultantView>
+  <!--  <ConsultantView></ConsultantView>-->
   <!--  <RhView></RhView>-->
-  <!--  <LeadTechView></LeadTechView>-->
+  <LeadTechView></LeadTechView>
 </template>
 <script setup lang="ts">
 import ConsultantView from 'pages/Dashboard/ConsultantDashboard.vue'
