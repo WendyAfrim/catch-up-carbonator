@@ -1,8 +1,8 @@
 <template>
-
-  <span class="material-icons pointer cta" @click="open">
+  <q-btn v-if="props.logo === 'badge'" size="sm" outline rounded color="green" label="Retour client" @click="open"/>
+  <span v-else class="material-icons pointer cta" @click="open">
         {{ logo }}
-    </span>
+  </span>
   <q-dialog v-model="icon">
     <q-card style="width: 700px; max-width: 80vw;">
       <q-card-section class="row items-center q-px-md">

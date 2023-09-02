@@ -78,7 +78,6 @@
                   </Modal>
                 </q-card-section>
               </q-card-section>
-              <!--              <h5 class="text-black">Challenge du mois</h5>-->
               <div class="text-caption">
                 <ul>
                   <li>Date de début = {{ challenge.start_at }}</li>
@@ -86,11 +85,6 @@
                   <li>Description : {{ challenge.description }}</li>
                 </ul>
               </div>
-              <!--              <div class="q-pt-md">-->
-              <!--                <router-link to="/challenge/" +>-->
-              <!--                  <q-btn color="green" text-color="white" label="En savoir plus"/>-->
-              <!--                </router-link>-->
-              <!--              </div>-->
             </template>
           </Card>
         </div>
@@ -100,8 +94,8 @@
         <div class="q-pa-md">
           <Card class="my-card bg-white text-grey shadow-4 q-pa-md">
             <template #body>
-              <q-card-section horizontal>
-                <q-card-section class="q-pt-xs">
+              <div class="row justify-between">
+                <div class="column">
                   <h5>Mon projet actuel</h5>
                   <div class="text-caption text-grey">
                     <li>Client : Danone</li>
@@ -109,13 +103,14 @@
                     <li>Date de fin de contrat : 18 Novembre 2023</li>
                     <li>CTO du projet : Antoine Lecomte</li>
                   </div>
-                </q-card-section>
-              </q-card-section>
-
-              <div class="q-pa-md q-gutter-sm">
-                <router-link to="/challenge/">
-                  <q-btn color="green" text-color="white" label="Details"/>
-                </router-link>
+                </div>
+                <div>
+                  <Modal title="Retour de votre client" logo="badge">
+                    <template #body>
+                      <FeedbackModal/>
+                    </template>
+                  </Modal>
+                </div>
               </div>
             </template>
           </Card>
@@ -238,6 +233,7 @@ import AddSkillsForm from 'components/Forms/AddSkillsForm.vue';
 import {Challenge, getActiveChallenge} from 'src/firebase/Challenge';
 import {Training} from 'src/firebase/Training';
 import ChallengeModal from 'components/Modal/ChallengeModal.vue';
+import FeedbackModal from 'components/Modal/FeedbackModal.vue';
 
 const leftDrawerOpen = ref(true)
 
