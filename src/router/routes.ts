@@ -47,23 +47,15 @@ const routes: RouteRecordRaw[] = [
           ]
         }
       },
-      {
-        path: '/login', component: () => import('pages/LoginPage.vue'), meta: {
-          breadcrumb: [
-            {name: 'Connexion', link: '/login'}
-          ]
-        }
-      }
     ],
+  },
 
-    // component: () => (),
-    // children: [
-    //   { path: '/login', component: () => import('pages/LoginPage.vue'), meta: {
-    //     breadcrumb: [
-    //       {name: 'Connexion', link: '/login'}
-    //     ]
-    //   }},
-    // ]
+  {
+    path: '/login', component: () => import('pages/LoginPage.vue'), meta: {
+      breadcrumb: [
+        {name: 'Connexion', link: '/login'}
+      ]
+    }
   },
 
   // Always leave this as last one,
