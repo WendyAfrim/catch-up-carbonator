@@ -218,7 +218,7 @@
         </div>
       </div>
     </div>
-  </div>
+    </div>
   <Modal ref="icon">
     <template #header>
       <h1>Test</h1>
@@ -239,8 +239,9 @@ import {Challenge, getActiveChallenge} from 'src/firebase/Challenge';
 import {Training} from 'src/firebase/Training';
 import ChallengeModal from 'components/Modal/ChallengeModal.vue';
 
+import {currentUserStore} from "stores/currrent_user";
+const store = currentUserStore();
 const leftDrawerOpen = ref(true)
-
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
@@ -267,13 +268,13 @@ const model = ref();
 function loadSkills() {
   console.log('test');
 }
-
 const activeChallenge = ref<Challenge[]>()
-console.log(activeChallenge);
 
 onMounted(async () => {
+  await store.monitorAuthState();
   activeChallenge.value = await getActiveChallenge();
 })
+
 </script>
 
 <style lang="scss">

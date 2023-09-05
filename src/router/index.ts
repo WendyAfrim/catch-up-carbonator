@@ -4,6 +4,7 @@ import {
   createRouter,
   createWebHashHistory,
   createWebHistory,
+  useRouter
 } from 'vue-router';
 
 import routes from './routes';
@@ -34,3 +35,4 @@ export default route(function (/* { store, ssrContext } */) {
 
   return Router;
 });
+

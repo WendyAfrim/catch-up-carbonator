@@ -52,7 +52,7 @@ const skillsForm = reactive<HardSkill[]>([
 )
 
 function submitSkills() {
-  addSkills(skillsForm);
+  addSkills(skillsForm.map((skill)=>{return skill.name}));
 }
 
 function addSkillsField(expand: boolean) {
@@ -64,7 +64,7 @@ function addSkillsField(expand: boolean) {
 }
 
 function deleteSkill(counter: number) {
-  skillsForm.splice(counter, 1);
+  // skillsForm.splice(counter, 1);
 }
 
 </script>

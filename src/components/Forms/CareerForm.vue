@@ -7,7 +7,7 @@
           <div class="row">
             <div class="col-12 col-md-6">
               <div class="q-mx-xl q-mt-xl q-py-md">
-                <q-input standout="bg-green text-white" :dense="true" v-model="careerForm.name"
+                <q-input standout="bg-green text-white" :dense="true" v-model="careerForm.position"
                          label="Nom du parcours"/>
               </div>
             </div>
@@ -52,7 +52,7 @@
             </div>
           </div>
           <div class="text-center q-pt-ùd q-pb-md">
-            <q-btn color="green" type="submit">Enregistrer</q-btn>
+            <SubmitButton label="Enregistrer" :submit="submit" @click="submit = !submit"></SubmitButton>
           </div>
         </q-form>
       </template>
@@ -62,9 +62,14 @@
 <script setup lang="ts">
 import Card from 'components/CardComponent.vue';
 import {reactive, ref} from 'vue';
+import {createCareer} from 'src/firebase/Careers';
+import SubmitButton from 'components/Buttons/SubmitButton.vue';
 
+
+const submit = ref(false);
 const careerForm = reactive({
-  name: '',
+  position: '',
+  location: '',
   description: '',
   prerequisite: '',
   goals: [{
@@ -73,6 +78,7 @@ const careerForm = reactive({
 })
 
 function submitCareerDetails() {
+  createCareer(careerForm)
   console.log(careerForm);
 }
 
