@@ -1,6 +1,8 @@
-import {HardSkill, PROJECT_STATE} from 'src/firebase/Types';
-import {collection, doc, getDoc, getDocs, setDoc} from 'firebase/firestore';
+import {HardSkill, LeadTechConsultant, PROJECT_STATUS, ProjectConsultant} from 'src/firebase/Types';
+import {collection, doc, getDoc, getDocs, setDoc, updateDoc} from 'firebase/firestore';
 import {db} from 'src/firebase/index';
+import {LeadTech} from 'src/firebase/LeadTech';
+
 
 export type CreateProjectOutput = {
   name: string,
@@ -8,10 +10,13 @@ export type CreateProjectOutput = {
   description: string,
   start_at?: string,
   end_at?: string,
+  leadTech?: LeadTechConsultant,
+  position?: string,
+  team?: Array<ProjectConsultant>,
+  status?: PROJECT_STATUS
+  // clientFeedBack?: string
   skillsName?: string,
-  state?: PROJECT_STATE,
-  position: string,
-  skills: Array<HardSkill>
+  skills?: Array<HardSkill>
 }
 
 export class Project {
@@ -20,18 +25,25 @@ export class Project {
   start_at: Date;
   end_at: Date;
   description: string;
-  skills: Array<HardSkill>;
-  position: string;
-  state: PROJECT_STATE;
+  skills?: Array<HardSkill>;
+  leadTech?: LeadTechConsultant;
+  position?: string;
+  team?: Array<ProjectConsultant>
+  clientFeedBack?: string
+  status?: PROJECT_STATUS
+
 
   constructor(name: string,
               client: string,
               start_at: Date,
               end_at: Date,
               description: string,
-              skills: Array<HardSkill>,
-              position: string,
-              state: PROJECT_STATE,
+              skills?: Array<HardSkill>,
+              leadTech?: LeadTechConsultant,
+              position?: string,
+              team?: Array<ProjectConsultant>,
+              clientFeedBack?: string,
+              status?: PROJECT_STATUS
   ) {
     this.name = name;
     this.client = client;
@@ -39,22 +51,16 @@ export class Project {
     this.end_at = end_at;
     this.description = description;
     this.skills = skills;
+    this.leadTech = leadTech;
     this.position = position;
-    this.state = state;
+    this.team = team;
+    this.clientFeedBack = clientFeedBack;
+    this.status = status
+
   }
 
   toString() {
     return this.name + ', ' + this.description + ', ' + this.client;
-  }
-
-  public skillsName(): string {
-    if (this.skills) {
-      return this.skills?.map((skill) => {
-        return skill.name
-      }).join()
-    } else {
-      return ''
-    }
   }
 }
 
@@ -67,8 +73,11 @@ const projectConverter = {
       end_at: project.end_at,
       description: project.description,
       skills: project.skills,
+      leadTech: project.leadTech,
       position: project.position,
-      state: project.state
+      team: project.team,
+      clientFeedBack: project.clientFeedBack,
+      status: project.status
     };
   },
   fromFirestore: (snapshot: any, options: any) => {
@@ -80,8 +89,12 @@ const projectConverter = {
       data.end_at,
       data.description,
       data.skills,
+      data.leadTech,
       data.position,
-      data.state);
+      data.team,
+      data.clientFeedBack,
+      data.status
+    );
   }
 };
 
@@ -92,13 +105,20 @@ const getProject = async (uid: string) => {
     const project: Project = projectSnap.data();
     return project;
   } else {
-    console.log('No such project!');
+    console.error('No such project!');
   }
 }
 
 
 const createProject = async (project: Project) => {
-  const projectsRef = collection(db, 'projects').withConverter(projectConverter);
+  const projectsRef = collection(db, 'projects');
+  const projectRef = doc(projectsRef, project.name);
+  const projectSnap = await getDoc(projectRef);
+  if (projectSnap.exists()) {
+    console.error('This project is already exist');
+    return null;
+  }
+  project.status = PROJECT_STATUS.New;
   return await setDoc(doc(projectsRef, project.name), project);
 }
 
@@ -123,12 +143,14 @@ const getProjectsOutput = async () => {
         description: project.description,
         start_at: project.start_at?.toString(),
         end_at: project.end_at?.toString(),
-        state: project.state,
         position: project.position,
-        skillsName: project.skills?.map((skill) => {
+        leadTech: project.leadTech,
+        skillsName: project.skills?.map((skill: HardSkill) => {
           return skill.name
         }).join(),
-        skills: project.skills
+        skills: project.skills,
+        team: project.team
+
       }
     )
   })
@@ -136,9 +158,24 @@ const getProjectsOutput = async () => {
   return allProjectsOutput;
 }
 
+const addFeedBack = async (projectUid: string, clientFeedBack: string) => {
+  const projectRef = doc(db, 'projects', projectUid).withConverter(projectConverter);
+  const projectSnap = await getDoc(projectRef);
+  if (!projectSnap.exists()) {
+    console.error(`Project: ${projectUid} not exist`);
+    return null;
+  }
+  const project: Project = projectSnap.data();
+  await updateDoc(projectRef, {
+    clientFeedBack: clientFeedBack,
+    status: PROJECT_STATUS.FeedBack
+  });
+}
+
 export {
   createProject,
   getProject,
   getProjects,
-  getProjectsOutput
+  getProjectsOutput,
+  projectConverter
 }

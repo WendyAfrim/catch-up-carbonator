@@ -63,5 +63,6 @@ const getTrainings = async () => {
 export {
   createTraining,
   getTraining,
-  getTrainings
+  getTrainings,
+  trainingConverter
 }
