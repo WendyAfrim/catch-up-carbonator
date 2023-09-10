@@ -1,11 +1,16 @@
-import {
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-  sendPasswordResetEmail,
-} from 'firebase/auth';
+import {createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signOut,} from 'firebase/auth';
 import {arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, setDoc, updateDoc} from 'firebase/firestore'
+import {
+  Credentials,
+  HardSkill,
+  PROJECT_STATUS,
+  ROLE,
+  ConsultantProject,
+  ConsultantTraining, TRAINING_STATUS
+} from 'src/firebase/Types';
+import {Project, projectConverter} from 'src/firebase/Project'
+import {Training, trainingConverter} from 'src/firebase/Training';
 import {auth, db} from 'src/firebase/index';
-import {HardSkill, ROLE, Credentials} from 'src/firebase/Types';
 import firebase from 'firebase/compat';
 import QueryDocumentSnapshot = firebase.firestore.QueryDocumentSnapshot;
 
@@ -29,15 +34,6 @@ export type CreateConsultantOutput = {
   state?: string
 }
 
-
-type Project = {
-  name: string,
-  start_at: string,
-  end_at: string,
-  position: string,
-  client: string,
-  feedback?: string
-}
 type Goal = {
   name: string,
   achieved: boolean
@@ -48,44 +44,37 @@ type Job = {
   end_at: Date,
   goals?: Array<Goal>
 }
-type Training = {
-  name: string,
-  link: string,
-  achieved: boolean
-}
 
 export class Consultant {
   firstname: string;
   lastname: string;
-  roles?: string;
   email: string;
   hired_as?: string;
   begin_at?: Date;
   state?: boolean;
   skills?: Array<HardSkill>;
-  currentProject?: Project;
-  projects?: Array<Project>;
+  currentProject?: ConsultantProject;
+  projects?: Array<ConsultantProject>;
   careers?: Array<Job>;
-  training?: Array<Training>;
+  trainings?: Array<ConsultantTraining>;
   position?: string;
 
   constructor(
     firstname: string,
     lastname: string,
     email: string,
-    hired_as: string,
-    begin_at: Date,
-    state: boolean,
-    skills: Array<HardSkill>,
-    currentProject: Project,
-    projects: Array<Project>,
-    careers: Array<Job>,
-    training: Array<Training>,
-    position: string
+    hired_as?: string,
+    begin_at?: Date,
+    state?: boolean,
+    skills?: Array<HardSkill>,
+    currentProject?: ConsultantProject,
+    projects?: Array<ConsultantProject>,
+    careers?: Array<Job>,
+    trainings?: Array<ConsultantTraining>,
+    position?: string,
   ) {
     this.firstname = firstname;
     this.lastname = lastname;
-    this.roles = ROLE.Consultant;
     this.email = email;
     this.hired_as = hired_as;
     this.begin_at = begin_at;
@@ -94,7 +83,7 @@ export class Consultant {
     this.currentProject = currentProject;
     this.projects = projects;
     this.careers = careers;
-    this.training = training;
+    this.trainings = trainings;
     this.position = position;
   }
 
@@ -108,16 +97,16 @@ const consultantConverter = {
     return {
       firstname: consultant.firstname,
       lastname: consultant.lastname,
-      roles: ROLE.Consultant,
       email: consultant.email,
-      state: consultant?.state,
       hired_as: consultant?.hired_as,
       begin_at: consultant?.begin_at,
+      state: consultant?.state,
       skills: consultant?.skills,
       currentProject: consultant?.currentProject,
       projects: consultant?.projects,
       careers: consultant?.careers,
-      training: consultant?.training
+      trainings: consultant?.trainings,
+      position: consultant?.position
     };
   },
   fromFirestore: (snapshot: any, options: any) => {
@@ -133,8 +122,8 @@ const consultantConverter = {
       data.currentProject,
       data.projects,
       data.careers,
-      data.training,
-      data.position
+      data.trainings,
+      data.position,
     );
   }
 };
@@ -151,11 +140,7 @@ const getConsultant = async (uid: string) => {
 }
 const createConsultantAccount = async (credentials: Credentials, consultant: Consultant) => {
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, credentials.email, 'Test123')// credentials.password);
-    await sendEmailVerification(userCredential.user);
-
-    consultant.roles = ROLE.Consultant;
-    await sendPasswordResetEmail(auth, credentials.email);
+    const userCredential = await createUserWithEmailAndPassword(auth, credentials.email, 'Test123');// credentials.password);
     const usersRef = doc(db, 'consultants', userCredential.user.uid);
     const usersRoles = doc(db, 'roles', userCredential.user.uid);
     await setDoc(usersRoles, {roles: ROLE.Consultant});
@@ -180,7 +165,7 @@ const createConsultantAccount = async (credentials: Credentials, consultant: Con
 //   }
 // }
 const updateConsultant = async (uid: string, updatedData: any) => {
-  const consultantRef = doc(db, 'consultants', uid);
+  const consultantRef = doc(db, 'consultants', uid).withConverter(consultantConverter);
   await updateDoc(consultantRef, updatedData)
 }
 
@@ -232,6 +217,75 @@ const getConsultantsOutput = async () => {
     )
   })
   return allConsultantsOutput;
+}
+
+const isInProjects = (projects: Array<ConsultantProject>, newProject: ConsultantProject) => {
+  if (!projects.length) return false;
+  const projectsNames = projects.map((project) => {
+    return project.name
+  })
+  console.log('list names: ', projectsNames);
+  return projectsNames.includes(newProject.name);
+}
+
+const setConsultantCurrentProject = async (consultantUid: string, projectUid: string) => {
+  const consultantRef = doc(db, 'consultants', consultantUid).withConverter(consultantConverter);
+  const consultantSnap = await getDoc(consultantRef);
+  if (!consultantSnap.exists()) {
+    console.error(`Consultant: ${consultantUid} not exist`);
+    return null;
+  }
+  const consultant: Consultant = consultantSnap.data();
+  const projectRef = doc(db, 'projects', projectUid).withConverter(projectConverter);
+  const projectSnap = await getDoc(projectRef);
+  if (!projectSnap.exists()) {
+    console.error(`Project: ${projectUid} not exist`);
+    return null;
+  }
+  const project: Project = projectSnap.data();
+  if (!consultant.currentProject) {
+    await updateDoc(consultantRef, {
+      currentProject: {
+        name: project.name,
+        client: project.client,
+        start_at: project.start_at,
+        end_at: project.end_at,
+      }
+    });
+  } else {
+    const projectTemp = consultant.currentProject;
+    if (consultant.currentProject.name !== project.name) {
+      console.log('is not current project')
+      await updateDoc(consultantRef, {
+        projects: arrayUnion({
+          name: projectTemp.name,
+          client: projectTemp.client,
+          start_at: projectTemp.start_at,
+          end_at: projectTemp.end_at
+        })
+      });
+    }
+    await updateDoc(consultantRef, {
+      currentProject: {
+        name: project.name,
+        client: project.client,
+        start_at: project.start_at,
+        end_at: project.end_at
+      }
+    })
+  }
+  await updateDoc(projectRef, {
+    status: PROJECT_STATUS.In_Progress
+  });
+  await updateDoc(projectRef, {
+    team: arrayUnion({
+      firstname: consultant.firstname,
+      lastname: consultant.lastname,
+      email: consultant.email
+      ,
+      position: consultant.position
+    })
+  })
 }
 
 const getConsultantsBySkills = async (projectSkills: any) => {
@@ -302,7 +356,32 @@ const filterConsultantBySkills = async (projectSkills: Array<HardSkill>, consult
 //   });
 //   return allConsultants;
 // }
+
+const addTrainingToConsultant = async (trainingUid: string, consultantUid: string) => {
+  const trainingRef = doc(db, 'trainings', trainingUid).withConverter(trainingConverter);
+  const trainingSnap = await getDoc(trainingRef);
+  if (!trainingSnap.exists()) {
+    console.error(`Project: ${trainingUid} not exist`);
+    return null;
+  }
+  const training: Training = trainingSnap.data();
+  const consultantRef = doc(db, 'consultants', consultantUid).withConverter(consultantConverter);
+  const consultantSnap = await getDoc(consultantRef);
+  if (!consultantSnap.exists()) {
+    console.error(`Consultant: ${consultantUid} not exist`);
+    return null;
+  }
+  await updateDoc(consultantRef, {
+    trainings: arrayUnion({
+      name: training.name,
+      isStarted: TRAINING_STATUS.STARTED
+    })
+  })
+
+}
+
 export {
+  consultantConverter,
   createConsultantAccount,
   // consultantLogin, //return Consultant if OK, null if emails is not verified, in error case the value will be undefined
   getConsultant,
@@ -311,5 +390,7 @@ export {
   addSkills,
   removeSkills,
   getConsultantsOutput,
-  getConsultantsBySkills
+  getConsultantsBySkills,
+  setConsultantCurrentProject,
+  addTrainingToConsultant,
 }

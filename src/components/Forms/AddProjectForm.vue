@@ -127,7 +127,7 @@
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue';
 import {Project, createProject} from '../../firebase/Project';
-import {Level, PROJECT_STATE} from 'src/firebase/Types';
+import {Level, PROJECT_STATUS} from 'src/firebase/Types';
 import SuccessComponent from 'components/SuccessComponent.vue';
 import {getLeadTechs, getLeadTechsNames, LeadTech} from 'src/firebase/LeadTech';
 import SubmitButton from 'components/Buttons/SubmitButton.vue';
@@ -147,7 +147,7 @@ const projectForm = reactive({
     level: Level.Junior,
     nb_exp: 0
   }],
-  state: PROJECT_STATE.New
+  state: PROJECT_STATUS.New
 });
 
 const emit = defineEmits(['submitProject']);

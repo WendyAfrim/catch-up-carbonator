@@ -1,35 +1,37 @@
 
-import {collection, doc, getDoc, getDocs, setDoc, updateDoc, query, where} from 'firebase/firestore'
+import {collection, doc, getDoc, getDocs, setDoc, updateDoc, query, where, arrayUnion} from 'firebase/firestore'
 import {db} from "src/firebase/index";
+import {ProjectConsultant} from "src/firebase/Types";
+import {projectConverter} from "src/firebase/Project";
+import {Consultant, consultantConverter} from "src/firebase/Consultant";
 export class Challenge {
     name: string;
     description: string;
     start_at: Date;
     delay: Date;
     gifts: string;
-    techLead: string; //LeadTech
     isActive: boolean;
-    //participants: Array<Consultant>
+    participants?: Array<ProjectConsultant>
     constructor(
         name : string,
         description : string,
         start_at : Date,
         delay: Date,
         gifts: string,
-        techLead: string,
-        isActive: boolean
+        isActive: boolean,
+        participants?: Array<ProjectConsultant>
 ) {
         this.name = name;
         this.description = description;
         this.start_at = start_at;
         this.delay = delay;
         this.gifts = gifts;
-        this.techLead = techLead;
         this.isActive = isActive;
+        this.participants = participants;
     }
 
     toString() {
-        return this.name + ', ' + this.description + ', ' + this.gifts + ', ' + this.techLead;
+        return this.name + ', ' + this.description + ', ' + this.gifts + ', ';
     }
 }
 const challengeConverter = {
@@ -40,8 +42,8 @@ const challengeConverter = {
             start_at : challenge.start_at,
             delay : challenge.delay,
             gifts : challenge.gifts,
-            techLead: challenge.techLead,
-            isActive: challenge.isActive
+            isActive: challenge.isActive,
+            participants: challenge.participants
         };
     },
     fromFirestore: (snapshot: any, options: any) => {
@@ -52,8 +54,8 @@ const challengeConverter = {
             data.start_at,
             data.delay,
             data.gifts,
-            data.techLead,
-            data.isActive
+            data.isActive,
+            data.participants
         );
     }
 };
@@ -94,10 +96,35 @@ const getChallenges = async () => {
     });
     return allChallenges;
 }
+
+const participate = async (consultantUid: string, challengeUid: string) => {
+  const consultantRef = doc(db, 'consultants', consultantUid).withConverter(consultantConverter);
+  const consultantSnap = await getDoc(consultantRef);
+  if(!consultantSnap.exists()) {
+    console.error(`Consultant: ${consultantUid} not exist`);
+    return null;
+  }
+  const consultant: Consultant = consultantSnap.data();
+  const challengeRef = doc(db, 'challenges', challengeUid).withConverter(challengeConverter);
+  const challengeSnap = await getDoc(challengeRef);
+  if(!challengeSnap.exists()){
+    console.error(`Project: ${challengeUid} not exist`);
+    return null;
+  }
+  await updateDoc(challengeRef, {
+    participants: arrayUnion({
+      firstname: consultant.firstname,
+      lastname: consultant.lastname,
+      email: consultant.email,
+      position: consultant.position})
+  });
+}
+
 export {
   createChallenge,
   getChallenge,
   getActiveChallenge,
   updateChallenge,
   getChallenges,
+  participate
 }
