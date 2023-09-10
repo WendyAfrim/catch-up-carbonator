@@ -27,7 +27,13 @@
             </div>
           </div>
           <div class="text-center q-mt-xl">
-            <q-btn color="green" type="submit">Enregistrer</q-btn>
+            <div v-if="success">
+              <SuccessComponent>
+                <p class="text-green-4">Vos compétences ont été enregistrées avec succès !</p>
+              </SuccessComponent>
+            </div>
+            <p v-else-if="errorMessage" class="text-red-4">{{ errorMessage }}</p>
+            <SubmitButton label="Enregistrer" :submit="submit" @click="submit = !submit"></SubmitButton>
           </div>
         </div>
       </div>
@@ -38,9 +44,19 @@
 import {reactive, ref} from 'vue';
 import {HardSkill, Level} from 'src/firebase/Types';
 import {addSkills} from 'src/firebase/Consultant';
+import SuccessComponent from 'components/SuccessComponent.vue';
+import SubmitButton from 'components/Buttons/SubmitButton.vue';
+import {currentUserStore} from 'stores/currrent_user';
 
 const expand = ref(false);
-const levelOptions = ['Junior', 'Confirmé', 'Senior'];
+const levelOptions = [Level.Junior, Level.Confirmed, Level.Senior];
+
+const submit = ref(false);
+const errorMessage = ref('');
+const success = ref(false);
+
+const store = currentUserStore();
+console.log(store);
 
 const skillsForm = reactive<HardSkill[]>([
     {
@@ -52,7 +68,12 @@ const skillsForm = reactive<HardSkill[]>([
 )
 
 function submitSkills() {
-  addSkills(skillsForm.map((skill)=>{return skill.name}));
+  console.log(skillsForm);
+  addSkills(skillsForm).then(() => {
+    success.value = true;
+  }).catch((error) => {
+    errorMessage.value = error;
+  });
 }
 
 function addSkillsField(expand: boolean) {

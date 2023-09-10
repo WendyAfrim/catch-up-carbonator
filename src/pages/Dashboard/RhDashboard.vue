@@ -8,16 +8,33 @@
           <Card class="my-card bg-green text-grey shadow-4 q-pa-md">
             <template #body>
               <div class="text-right">
-                <Modal logo="add_circle" color="white" title="Ajouter un nouveau consultant"
-                       subtitle="Veuillez renseigner toutes ses informations"
+                <Modal logo="add_circle" color="white" title="Ajouter un nouveau membre"
+                       subtitle=""
                 >
                   <template #body>
-                    <AddConsultantForm></AddConsultantForm>
+                    <div class="row justify-center">
+                      <q-btn outline rounded color="green" label="Nouveau Consultant"
+                             @click="displayForm('consultant')" class="q-ma-xs"/>
+                      <q-btn outline rounded color="red" label="Nouveau LeadTech" @click="displayForm('leadTech')"
+                             class="q-ma-xs"/>
+                      <q-btn outline rounded color="black" label="Nouveau RH" @click="displayForm('rh')"
+                             class="q-ma-xs"/>
+                    </div>
+
+                    <div v-if="display === 'consultant'">
+                      <AddConsultantForm/>
+                    </div>
+                    <div v-else-if="display === 'leadTech'">
+                      <AddLeadTechForm/>
+                    </div>
+                    <div v-else-if="display === 'rh'">
+                      <AddHRForm/>
+                    </div>
                   </template>
                 </Modal>
               </div>
               <div class="column items-center">
-                <h5 class="text-white">Consultants</h5>
+                <h5 class="text-white">Ressources humaines</h5>
                 <span class="material-icons icon card-icon card-icon__white">
                     groups
                 </span>
@@ -148,7 +165,7 @@
       </div>
     </div>
   </div>
-  <div class="q-py-md">
+  <div class="q-pa-xl">
     <div class="row justify-around">
       <div class="col-12 col-md-12">
         <h1 class="text-h4 q-pb-md">Nos projets</h1>
@@ -207,15 +224,15 @@
               <q-tr v-show="props.expand" :props="props">
                 <q-td colspan="100%">
                   <div class="text-left">
-                    Besoins détaillés du projet :
+                    <span class="text-h6">Langages :</span>
                     <ul>
                       <li v-for="(skill) in props.row.skills" :key="skill.name" class="project_skill">
                         {{ skill.name }} | {{ skill.level }} | {{ skill.nb_exp }} ans
                       </li>
                     </ul>
-
-                    <br>
-                    Exigences du client
+                    <router-link :to="`/project/${props.row.name}`">
+                      <q-btn color="green">Match</q-btn>
+                    </router-link>
                   </div>
                 </q-td>
               </q-tr>
@@ -226,7 +243,7 @@
     </div>
   </div>
   <!-- Formations / Parcours -->
-  <div class="q-py-md">
+  <div class="q-px-xl">
     <div class="row">
       <div class="col-12 col-md-6 q-pr-xl q-pb-md">
         <h1 class="text-h4 q-pb-md">Nos formations</h1>
@@ -252,37 +269,6 @@
                                label="Filtre Niveau" dense></q-input>
                     </q-td>
                   </q-tr>
-
-                </template>
-                <template v-slot:header="props">
-                  <q-tr :props="props">
-                    <q-th auto-width/>
-                    <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                      {{ col.label }}
-                    </q-th>
-                  </q-tr>
-                </template>
-
-                <template v-slot:body="props">
-                  <q-tr :props="props">
-                    <q-td auto-width>
-                      <q-btn size="sm" color="green" round dense
-                             @click="props.expand = !props.expand"
-                             :icon="props.expand ? 'remove' : 'add'"/>
-                    </q-td>
-                    <q-td v-for="col in props.cols" :key="col.name" :props="props">
-                      {{ col.value }}
-                    </q-td>
-                  </q-tr>
-                  <q-tr v-show="props.expand" :props="props">
-                    <q-td colspan="100%">
-                      <div class="text-left">
-                        Besoins détaillés du projet : {{ props.row.skills }}
-                        <br>
-                        Exigences du client
-                      </div>
-                    </q-td>
-                  </q-tr>
                 </template>
               </q-table>
             </div>
@@ -301,34 +287,19 @@
             <div class="q-pa-md q-gutter-md parcours">
               <q-list bordered padding class="rounded-borders">
                 <q-item-label header>Parcours personnalisés</q-item-label>
-                <q-item clickable v-ripple>
+                <q-item clickable v-ripple v-for="(career) in careers" :key="career.position">
                   <q-item-section avatar top>
                     <q-avatar icon="verified" color="green" text-color="white"/>
                   </q-item-section>
 
                   <q-item-section>
-                    <q-item-label lines="1">Product Owner</q-item-label>
-                    <q-item-label caption>February 22nd, 2019</q-item-label>
+                    <q-item-label lines="1">{{ career.position }}</q-item-label>
                   </q-item-section>
 
                   <q-item-section side>
                     <q-icon name="edit_note" color="green"/>
                   </q-item-section>
-                </q-item>
-                <q-separator spaced/>
-                <q-item clickable v-ripple>
-                  <q-item-section avatar top>
-                    <q-avatar icon="supervisor_account" color="red" text-color="white"/>
-                  </q-item-section>
-
-                  <q-item-section>
-                    <q-item-label lines="1">Scrum Master</q-item-label>
-                    <q-item-label caption>March 1st, 2019</q-item-label>
-                  </q-item-section>
-
-                  <q-item-section side>
-                    <q-icon name="edit_note"/>
-                  </q-item-section>
+                  <q-separator spaced/>
                 </q-item>
               </q-list>
             </div>
@@ -350,9 +321,17 @@ import AddTrainingForm from 'components/Forms/AddTrainingForm.vue';
 
 import {getTrainings, Training} from 'src/firebase/Training';
 import {getProjects, Project} from 'src/firebase/Project';
-import AddHRForm from 'components/Forms/AddHRForm.vue';
 import {currentUserStore} from 'stores/currrent_user';
 import {useRouter} from 'vue-router';
+import AddLeadTechForm from 'components/Forms/AddLeadTechForm.vue';
+import AddHRForm from 'components/Forms/AddHRForm.vue';
+import {Career, getCareers} from 'src/firebase/Careers';
+
+let display = ref('');
+
+function displayForm(resourceType: string) {
+  display.value = resourceType;
+}
 
 const consultantsColumns = [
   {
@@ -365,7 +344,7 @@ const consultantsColumns = [
   },
   {name: 'email', align: 'center', label: 'Email', field: 'email', sortable: true},
   {name: 'hired_as', align: 'center', label: 'Poste', field: 'hired_as', sortable: true},
-  {name: 'skills', label: 'Compétences', field: 'skills'},
+  {name: 'skillsName', label: 'Compétences', field: 'skillsName'},
   {name: 'state', label: 'Statut', field: 'state'},
 ]
 
@@ -420,13 +399,15 @@ const router = useRouter();
 const consultants = ref<CreateConsultantOutput[] | undefined>()
 const trainings = ref<Training[] | undefined>()
 const projects = ref<Project[] | undefined>()
+const careers = ref<Career[] | undefined>()
 
-console.log(consultants, projects);
+console.log(careers);
 
 onMounted(async () => {
   consultants.value = await getConsultantsOutput();
   trainings.value = await getTrainings();
   projects.value = await getProjects();
+  careers.value = await getCareers();
   await store.monitorAuthState();
 })
 </script>

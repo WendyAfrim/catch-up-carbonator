@@ -61,20 +61,9 @@ const routes: RouteRecordRaw[] = [
           ]
         }
       },
-      // {
-      //   path: '/login', component: () => import('pages/LoginPage.vue'), meta: {
-      //     breadcrumb: [
-      //       {name: 'Connexion', link: '/login'}
-      //     ]
-      //   }
-      // },
-      // {
-      //   path: '/', component: () => import('pages/AuthPage.vue'), meta: {
-      //     breadcrumb: [
-      //       {name: 'Connexion', link: '/'}
-      //     ]
-      //   }
-      // }
+      {
+        path: '/project/:uid', component: () => import('pages/ProjectPage.vue')
+      },
     ]
   },
   {

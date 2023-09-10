@@ -16,12 +16,6 @@
           </q-item-section>
         </q-item>
         <q-space></q-space>
-        <Modal logo="settings" color="black" title="Ajouter un nouveau R H"
-               subtitle="Veuillez renseigner toutes ses informations">
-          <template #body>
-            <AddHRForm></AddHRForm>
-          </template>
-        </Modal>
         <q-btn @click="store.logout" v-if="store.currentUser" label="logout" class="q-mx-xs"></q-btn>
       </q-toolbar>
     </q-header>

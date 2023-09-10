@@ -1,13 +1,13 @@
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
-  signInWithEmailAndPassword,
-  signOut,
   sendPasswordResetEmail,
 } from 'firebase/auth';
 import {arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, setDoc, updateDoc} from 'firebase/firestore'
 import {auth, db} from 'src/firebase/index';
-import {HardSkill, ROLE, Credentials, CustomErrorTypes} from 'src/firebase/Types';
+import {HardSkill, ROLE, Credentials} from 'src/firebase/Types';
+import firebase from 'firebase/compat';
+import QueryDocumentSnapshot = firebase.firestore.QueryDocumentSnapshot;
 
 export type CreateConsultantInput = {
   frstrame: string,
@@ -24,7 +24,8 @@ export type CreateConsultantOutput = {
   email: string,
   hired_as?: string,
   begin_at?: string,
-  skills?: string
+  skillsName?: string
+  skills?: Array<HardSkill>,
   state?: string
 }
 
@@ -222,8 +223,8 @@ const getConsultantsOutput = async () => {
         email: consultant.data().email,
         hired_as: consultant.data().hired_as,
         begin_at: consultant.data().begin_at?.toString(),
-        // hired_as: consultant.data().hired_as?.toString(),
-        skills: consultant.data().skills?.map((skill) => {
+        skills: consultant.data().skills,
+        skillsName: consultant.data().skills?.map((skill) => {
           return skill.name;
         }).join(),
         state: !consultant.data().state ? 'Occupé' : 'Disponible'
@@ -231,6 +232,59 @@ const getConsultantsOutput = async () => {
     )
   })
   return allConsultantsOutput;
+}
+
+const getConsultantsBySkills = async (projectSkills: any) => {
+  const querySnapshot = await getDocs(collection(db, 'consultants').withConverter(consultantConverter));
+  const allConsultantsOutput: Array<CreateConsultantOutput> = [];
+
+  querySnapshot.forEach(async (consultant) => {
+    const filteredConsultant: void | QueryDocumentSnapshot<Consultant> = await filterConsultantBySkills(projectSkills, consultant);
+
+    if (filteredConsultant) {
+
+      allConsultantsOutput.push(
+        {
+          uid: filteredConsultant.id,
+          fullname: filteredConsultant.data().firstname + ' ' + filteredConsultant.data().lastname,
+          email: filteredConsultant.data().email,
+          hired_as: filteredConsultant.data().hired_as,
+          begin_at: filteredConsultant.data().begin_at?.toString(),
+          skills: consultant.data().skills,
+          skillsName: filteredConsultant.data().skills?.map((skill) => {
+            return skill.name;
+          }).join(),
+          state: !filteredConsultant.data().state ? 'Occupé' : 'Disponible'
+        }
+      )
+    }
+  });
+
+  return allConsultantsOutput;
+}
+
+const filterConsultantBySkills = async (projectSkills: Array<HardSkill>, consultant: any): Promise<QueryDocumentSnapshot<Consultant> | void> => {
+  const projectSkill: Array<string> = [];
+  let hasConsultant = false;
+
+  projectSkills.map((skill) => {
+    projectSkill.push(skill.name);
+  });
+
+  if (consultant.data().skills) {
+    consultant.data().skills.forEach((consultantSkill: any) => {
+      if (projectSkill.includes(consultantSkill.name)) {
+        hasConsultant = true;
+        return hasConsultant;
+      } else {
+        hasConsultant = false;
+        return hasConsultant;
+      }
+      ;
+    });
+  }
+  return hasConsultant ? consultant : null;
+  // console.log(consultantSkills)
 }
 // const getConsultantsWithIds = async () => {
 //   const querySnapshot = await getDocs(collection(db, 'consultants').withConverter(consultantConverter));
@@ -256,5 +310,6 @@ export {
   getConsultants, // return type: Array<{uid: string, consultant: Consultant}>
   addSkills,
   removeSkills,
-  getConsultantsOutput
+  getConsultantsOutput,
+  getConsultantsBySkills
 }

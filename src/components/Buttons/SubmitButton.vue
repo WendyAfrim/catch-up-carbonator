@@ -1,14 +1,16 @@
 <template>
-  <q-btn color="green" :label="label" class="q-my-md" type="submit"
-         :icon="submit ? 'pending' : 'download' ">
+  <q-btn :color="color" :label="label" class="q-my-md" type="submit"
+         :icon="submit ? 'pending' : 'send' ">
   </q-btn>
 </template>
 <script setup lang="ts">
-import {ref} from 'vue';
-
 defineProps({
   label: String,
-  submit: Boolean
+  submit: Boolean,
+  color: {
+    type: String,
+    default: 'green'
+  }
 })
 
 </script>

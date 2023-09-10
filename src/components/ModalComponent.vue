@@ -1,10 +1,19 @@
 <template>
-  <span v-if="color === 'white' " class="material-icons pointer cta cta__white" @click="open">
-        {{ logo }}
-  </span>
-  <span v-else-if="color === 'black' " class="material-icons pointer cta cta__black" @click="open">
-        {{ logo }}
-  </span>
+  <div v-if="button">
+    <q-btn :label="buttonAttr.label" :color="buttonAttr.color" :text-color="buttonAttr.textColor" @click="open"/>
+  </div>
+  <span v-if="color === 'white' && !button " class="material-icons pointer cta cta__white" @click="open">
+          {{ logo }}
+    </span>
+  <span v-else-if="color === 'black'  && !button" class="material-icons pointer cta cta__black" @click="open">
+          {{ logo }}
+    </span>
+  <span v-else-if="color === 'green' && !button " class="material-icons pointer cta cta__green" @click="open">
+          {{ logo }}
+    </span>
+  <span v-else-if="color === 'red' && !button " class="material-icons pointer cta cta__red" @click="open">
+          {{ logo }}
+    </span>
   <q-dialog v-model="icon">
     <q-card style="width: 700px; max-width: 80vw;">
       <q-card-section class="row items-center q-px-md">
@@ -33,6 +42,13 @@ function open() {
 }
 
 const props = defineProps({
+  button: {
+    type: Boolean,
+    default: false
+  },
+  buttonAttr: {
+    type: Object
+  },
   title: {
     type: String
   },
@@ -40,14 +56,14 @@ const props = defineProps({
     type: String
   },
   logo: {
-    type: String
+    type: String,
+    default: 'add_circle'
   },
   color: {
-    type: String
+    type: String,
+    default: 'green'
   }
 })
-
-
 </script>
 <style lang="scss" scoped>
 </style>

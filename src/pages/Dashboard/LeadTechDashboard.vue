@@ -150,95 +150,333 @@
         </div>
       </div>
     </div>
-    <!-- Mes Equipes -->
-    <div class="q-ma-xl">
-      <Card>
-        <template #body>
-          <h1>Mes équipes</h1>
-          <div class="q-pa-md">
-            <q-option-group v-model="navPos" :options="navigationPositions" color="green" inline
-                            class="q-mb-md"/>
+    <div class="row justify-around">
+      <!-- Projets -->
+      <div class="col-12 col-md-4">
+        <!--        <div class="q-pa-md col-12 col-md-6">-->
+        <h1>Nouveaux Projets</h1>
+        <q-carousel
+          v-model="slide"
+          transition-prev="scale"
+          transition-next="scale"
+          swipeable
+          animated
+          control-color="black"
+          navigation
+          padding
+          arrows
+          height="350px"
+          class="bg-white text-black shadow-1 rounded-borders"
+        >
+          <q-carousel-slide :name="i + 1" class="column no-wrap flex-center q-pa-md"
+                            v-for="(project, i) in projects"
+                            :key="project.name">
+            <div class="q-pt-md text-center">
+              <div>
+                <q-icon name="style" size="56px" color="black"/>
+                <h6 class="q-ma-xs">{{ project.name }}</h6>
+                <Modal :title="project.name" :button=true :button-attr=buttonAttr>
+                  <template #body>
+                    <div class="row">
+                      <div class="col-12 col-md-6">
+                        <div class="column">
+                          <h5>Client</h5>
+                          <p>{{ project.client }}</p>
+                          <!--                            <q-separator spaced/>-->
+                          <h5>Dates</h5>
+                          <div class="column">
+                            <div class="col-12 col-md-6">
+                              <span>Date de début :</span>
+                              {{ project.start_at }}
+                            </div>
+                            <div class="col-12 col-md-6">
+                              <span>Date de fin :</span>
+                              {{ project.end_at }}
+                            </div>
+                          </div>
 
-            <q-carousel v-model="slide" swipeable animated :navigation-position="navPos" navigation padding
-                        height="300px" class="bg-green text-white rounded-borders">
-              <q-carousel-slide name="style" class="column no-wrap flex-center items-center">
-                <q-icon name="style" size="60px"/>
-                <small class="project_title">Projet Carbon</small>
-                <div class="q-mt-md text-center">
-                  <div class="q-pa-md q-gutter-sm" style="height: 80px">
-                    <q-avatar v-for="n in 5" :key="n" size="60px" class="overlapping q-mx-md">
-                      <img :src="`https://cdn.quasar.dev/img/avatar${n + 1}.jpg`">
-                    </q-avatar>
-                  </div>
-                </div>
+                        </div>
+                      </div>
+                      <q-separator spaced vertical="vertical"/>
+                      <div class="col-12 col-md-4">
+                        <div class="column">
+                          <h5>Description</h5>
+                          <p>{{ project.description }}</p>
+                          <h5>Stack</h5>
+                          <ul>
+                            <li v-for="(skill) in project.skills" :key="skill.name">{{ skill.name }}</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="text-center q-mt-xl">
+                      <SubmitButton label="Je participe au projet" :submit="submit"
+                                    @click="subscribeProject(project.name)"
+                      />
+                    </div>
+                  </template>
+                </Modal>
+              </div>
 
-                <q-btn class="q-mt-xl text-black" color="white">Voir plus</q-btn>
-              </q-carousel-slide>
-              <q-carousel-slide name="tv" class="column no-wrap flex-center">
-                <q-icon name="live_tv" size="56px"/>
-                <div class="q-mt-md text-center">
-                  {{ lorem }}
-                </div>
-              </q-carousel-slide>
-              <q-carousel-slide name="layers" class="column no-wrap flex-center">
-                <q-icon name="layers" size="56px"/>
-                <div class="q-mt-md text-center">
-                  {{ lorem }}
-                </div>
-              </q-carousel-slide>
-              <q-carousel-slide name="map" class="column no-wrap flex-center">
-                <q-icon name="terrain" size="56px"/>
-                <div class="q-mt-md text-center">
-                  {{ lorem }}
-                </div>
-              </q-carousel-slide>
-            </q-carousel>
-          </div>
-        </template>
-      </Card>
+            </div>
+          </q-carousel-slide>
+        </q-carousel>
+      </div>
+      <div class="col-12 col-md-7">
+        <h1>Mes Equipes</h1>
+        <q-table title="Equipes" :rows="teamsRows" :columns="teamsColumns" row-key="name"
+                 :filter-method="filterData">
+          <template v-slot:header="props">
+            <q-tr :props="props">
+              <q-th auto-width/>
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                {{ col.label }}
+              </q-th>
+            </q-tr>
+          </template>
+
+          <template v-slot:body="props">
+            <!--            {{ props }}-->
+            <q-tr :props="props">
+              <q-td auto-width>
+                <ModalComponent logo="visibility" color="green">
+                  <template #header>
+                    <h5>{{ props.row.project }}</h5>
+                  </template>
+                  <template #body>
+                    <div class="row">
+                      <div class="col-12 col-md-6">
+                        <div class="column">
+                          <h5>Client</h5>
+                          <ul>
+                            <li>Ville de Paris</li>
+                          </ul>
+                          <h5>Description</h5>
+                          <p>PXO est une société spécialisée dans le domaine du Web. Nous nous intéressons en
+                            particulier au domaine du numérique et des médias pour enrichir l’expérience
+                            utilisateur. </p>
+                        </div>
+                      </div>
+                      <q-separator spaced vertical="vertical"/>
+                      <div class="col-12 col-md-5">
+                        <div class="text-center">
+                          <h5>Consultant</h5>
+                          <q-avatar size="5em">
+                            <img src="https://cdn.quasar.dev/img/avatar.png">
+                          </q-avatar>
+                          <ul>
+                            <li>Nom : Anne Laure</li>
+                            <li>Poste : Developpeuse JS Fullstack</li>
+                          </ul>
+                          <h5>Retour client :</h5>
+                          <q-input
+                            v-model="feedback"
+                            filled
+                            autogrow
+                            type="textarea"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row justify-center">
+                      <SubmitButton label="Enregistrer" color="green" class="q-mx-xs q-mt-xl"
+                                    :submit="submit"
+                                    @click="postFeedback('Anne Laure','Project' ,feedback)"></SubmitButton>
+                    </div>
+                  </template>
+                </ModalComponent>
+              </q-td>
+              <q-td v-for="col in props.cols" :key="col.name" :props="props">
+                {{ col.value }}
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
+      </div>
+    </div>
+    <div class="row">
+      <!-- Demandes de parcours -->
+      <div class="col-12 col-md-12">
+        <div class="q-pa-md col-12 col-md-6">
+          <h1>Demandes de parcours</h1>
+          <q-table title="Parcours" :rows="rows" :columns="columns" row-key="name"
+                   :filter-method="filterData">
+            <template v-slot:header="props">
+              <q-tr :props="props">
+                <q-th auto-width/>
+                <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                  {{ col.label }}
+                </q-th>
+              </q-tr>
+            </template>
+
+            <template v-slot:body="props">
+              <!--              {{ props }}-->
+              <q-tr :props="props">
+                <q-td auto-width>
+                  <ModalComponent logo="visibility" color="green">
+                    <template #header>
+                      <h5>{{ props.row.career }}</h5>
+                    </template>
+                    <template #body>
+                      <div class="row">
+                        <div class="col-12 col-md-6">
+                          <div class="column">
+                            <h5>Consultant</h5>
+                            <ul>
+                              <li>Nom : Jordy</li>
+                              <li>Poste actuel : Developpeur JS/React</li>
+                            </ul>
+                            <h5>Skills</h5>
+                            <ul>
+                              <li>Javascript | Junior | 2 ans</li>
+                              <li>React | Junior | 2 ans</li>
+                              <li>Vue | Confirmé | 4 ans</li>
+                            </ul>
+                          </div>
+                        </div>
+                        <q-separator spaced vertical="vertical"/>
+                        <div class="col-12 col-md-4">
+                          <h5>Objectifs</h5>
+                          <div>
+                            <q-toggle
+                              v-model="value"
+                              color="primary"
+                              keep-color
+                              label="Objectif 1"
+                            />
+                          </div>
+                          <div>
+                            <q-toggle
+                              v-model="value"
+                              color="primary"
+                              keep-color
+                              label="Objectif 2"
+                            />
+                          </div>
+                          <div>
+                            <q-toggle
+                              v-model="value"
+                              color="primary"
+                              keep-color
+                              label="Objectif 3"
+                            />
+                          </div>
+                          <div>
+                            <q-toggle
+                              v-model="value"
+                              color="primary"
+                              keep-color
+                              label="Objectif 4"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row justify-center">
+                        <SubmitButton label="Accepter" color="green" class="q-mx-xs q-my-md"
+                                      :submit="submit" @click="acceptCareer('Product Owner', 'Jordy')"></SubmitButton>
+                        <SubmitButton label="Refuser" color="red" class="q-mx-xs q-my-md"
+                                      :submit="submit" @click="refuseCareer('Product Owner', 'Jordy')"></SubmitButton>
+                      </div>
+                    </template>
+                  </ModalComponent>
+                </q-td>
+                <q-td v-for="col in props.cols" :key="col.name" :props="props">
+                  {{ col.value }}
+                </q-td>
+              </q-tr>
+            </template>
+          </q-table>
+        </div>
+      </div>
     </div>
   </div>
+  <!--  </div>-->
 </template>
 <script setup lang="ts">
-import {reactive, ref} from 'vue';
+import {onMounted, reactive, ref} from 'vue';
 
 import Card from 'src/components/CardComponent.vue';
 import Modal from 'src/components/ModalComponent.vue';
 import AddChallengeForm from 'components/Forms/LeadTech/AddChallengeForm.vue';
 import AddTrainingForm from 'components/Forms/AddTrainingForm.vue';
+import SubmitButton from 'components/Buttons/SubmitButton.vue';
+import {CreateProjectOutput, getProjectsOutput, Project} from 'src/firebase/Project';
+import {currentUserStore} from 'stores/currrent_user';
+import ModalComponent from 'components/ModalComponent.vue';
 
-const feedbackClientColumns = [
-  {
-    name: 'client',
-    required: true,
-    label: 'Client',
-    align: 'left',
-    field: 'client',
-    sortable: true
-  },
-  {name: 'project', align: 'center', label: 'Nom du projet', field: 'project', sortable: true},
-  {name: 'begin_at', align: 'center', label: 'Date de début', field: 'begin_at', sortable: true},
-  {name: 'end_at', label: 'Date de fin', field: 'end_at'},
+const submit = ref(false);
+const slide = ref(1);
+const store = currentUserStore();
+
+const columns = [
+  {name: 'consultant', align: 'center', label: 'Consultant', field: 'consultant', sortable: true},
+  {name: 'career', align: 'center', label: 'Parcours', field: 'career', sortable: true},
+
 ]
 
-const feedbackClientRows = [
+const rows = [
   {
-    client: 'Total',
-    project: 'Hydra',
-    begin_at: '13/01/2022',
-    end_at: '16/08/2023'
-  },
-  {
-    client: 'Danone',
-    project: 'Boom',
-    begin_at: '05/01/2021',
-    end_at: '01/08/2023'
+    consultant: 'Jordy',
+    career: 'Product Owner',
   },
 ]
 
-const feedbackClientFilters = reactive({
-  name: '',
-})
+const teamsColumns = [
+  {name: 'project', align: 'left', label: 'Projet', field: 'project', sortable: true},
+  {name: 'client', align: 'center', label: 'Client', field: 'client', sortable: true},
+  {name: 'consultant', align: 'center', label: 'Consultant', field: 'consultant', sortable: true},
+
+]
+
+const teamsRows = [
+  {
+    project: 'Projet JO 2024',
+    client: 'Ville de Paris',
+    consultant: 'Jordy',
+  },
+]
+
+const feedback = ref('');
+
+// const feedbackClientColumns = [
+//   {
+//     name: 'client',
+//     required: true,
+//     label: 'Client',
+//     align: 'left',
+//     field: 'client',
+//     sortable: true
+//   },
+//   {name: 'project', align: 'center', label: 'Nom du projet', field: 'project', sortable: true},
+//   {name: 'begin_at', align: 'center', label: 'Date de début', field: 'begin_at', sortable: true},
+//   {name: 'end_at', label: 'Date de fin', field: 'end_at'},
+// ]
+//
+// const feedbackClientRows = [
+//   {
+//     client: 'Total',
+//     project: 'Hydra',
+//     begin_at: '13/01/2022',
+//     end_at: '16/08/2023'
+//   },
+//   {
+//     client: 'Danone',
+//     project: 'Boom',
+//     begin_at: '05/01/2021',
+//     end_at: '01/08/2023'
+//   },
+// ]
+//
+// const feedbackClientFilters = reactive({
+//   name: '',
+// })
+
+const buttonAttr = {
+  'label': 'En savoir plus',
+  'color': 'white',
+  'textColor': 'black'
+};
 
 function filterData(rows, terms, cols, getCellValue) {
   for (const term in terms) {
@@ -249,19 +487,34 @@ function filterData(rows, terms, cols, getCellValue) {
   return rows
 }
 
-const navPos = ref('bottom');
-const navigationPositions = [
-  {value: 'top', label: 'top'},
-  {value: 'right', label: 'right'},
-  {value: 'bottom', label: 'bottom (default)'},
-  {value: 'left', label: 'left'}
-];
+const projects = ref<CreateProjectOutput[] | undefined>();
 
-const slide = ref('style');
-const lorem = 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Itaque voluptatem totam, architecto cupiditate officia rerum, error dignissimos praesentium libero ab nemo.'
+async function subscribeProject(projectName: string) {
+  submit.value = true;
+  const user = store.currentUser;
+}
+
+async function acceptCareer(career: string, consultant: string) {
+  submit.value = true;
+
+}
+
+async function refuseCareer(career: string, consultant: string) {
+  submit.value = true;
+
+}
+
+async function postFeedback(consultant: string, project: string, feedback: string) {
+  submit.value = true;
+  console.log(consultant, project, feedback);
+}
+
+onMounted(async () => {
+  projects.value = await getProjectsOutput();
+})
 
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .project_title {
   font-size: 1.5em;
 }
@@ -271,4 +524,12 @@ const lorem = 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Itaque 
   color: white;
 }
 
+ul {
+  margin-left: 0;
+  padding-left: 0.8em;
+}
+
+li {
+  padding-left: 0;
+}
 </style>

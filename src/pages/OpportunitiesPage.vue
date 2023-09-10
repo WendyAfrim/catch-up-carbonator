@@ -17,14 +17,15 @@
             <q-input outlined v-model="option.begin_at" label="Filtre Date de début" dense></q-input>
           </q-td>
           <q-td>
-            <q-input outlined v-model="option.skills" label="Filtre Compétences" dense></q-input>
+            <q-input outlined v-model="option.skillsName" label="Filtre Compétences" dense></q-input>
           </q-td>
           <q-td>
-            <q-input outlined v-model="option.techLead" label="Filtre Tech Lead" dense></q-input>
+            <q-input outlined v-model="option.leadTech" label="Filtre Tech Lead" dense></q-input>
           </q-td>
         </q-tr>
 
       </template>
+
       <template v-slot:header="props">
         <q-tr :props="props">
           <q-th auto-width/>
@@ -37,18 +38,32 @@
       <template v-slot:body="props">
         <q-tr :props="props">
           <q-td auto-width>
-            <q-btn size="sm" color="green" round dense @click="props.expand = !props.expand"
-                   :icon="props.expand ? 'remove' : 'add'"/>
+            <ModalComponent logo="add_circle" color="green">
+              <template #header>
+                <h5>{{ props.row.name }}</h5>
+              </template>
+              <template #body>
+                <h5>Poste</h5>
+                <p>{{ props.row.position }}</p>
+                <h5>Description</h5>
+                <p>{{ props.row.description }}</p>
+
+                <h5>Compétences requises</h5>
+                <q-table
+                  title="Skills"
+                  :rows="props.row.skills"
+                  :columns="skillsColumns"
+                  row-key="name"
+                />
+                <div class="text-center q-mt-xl">
+                  <q-btn color="green" label="Postuler" :icon="submit ? 'pending' : 'send'"
+                         @click="applyToProject(props.row.name)"/>
+                </div>
+              </template>
+            </ModalComponent>
           </q-td>
           <q-td v-for="col in props.cols" :key="col.name" :props="props">
             {{ col.value }}
-          </q-td>
-        </q-tr>
-        <q-tr v-show="props.expand" :props="props">
-          <q-td colspan="100%">
-            <div class="text-left">
-              Besoins détaillés du projet : {{ props.row.description }} <br>
-            </div>
           </q-td>
         </q-tr>
       </template>
@@ -58,25 +73,34 @@
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue';
 import {CreateProjectOutput, getProjects, getProjectsOutput, Project} from 'src/firebase/Project';
+import ModalComponent from 'components/ModalComponent.vue';
 
-const selected = ref([]);
+const icon = ref('send');
+const submit = ref(false);
 
 const columns = [
   {name: 'position', align: 'left', label: 'Poste', field: 'position', sortable: true},
   {name: 'client', align: 'center', label: 'Client', field: 'client', sortable: true},
+  {name: 'skillsName', label: 'Compétences requises', field: 'skillsName'},
   {name: 'start_at', align: 'center', label: 'Date de début', field: 'start_at', sortable: true},
   {name: 'end_at', align: 'center', label: 'Date de fin', field: 'end_at', sortable: true},
-  {name: 'skills', label: 'Compétences requises', field: 'skills'},
   {name: 'leadTech', label: 'Tech Lead', field: 'leadTech'},
 ]
 
 const option = reactive({
   position: '',
   client: '',
+  skillsName: '',
   begin_at: '',
-  skills: '',
-  techLead: '',
+  leadTech: '',
 })
+
+const skillsColumns = [
+  {name: 'name', align: 'left', label: 'Nom', field: 'name', sortable: true},
+  {name: 'level', align: 'center', label: 'Niveau', field: 'level', sortable: true},
+  {name: 'nb_exp', align: 'center', label: 'Expérience', field: 'nb_exp', sortable: true},
+]
+
 
 function filterData(rows, terms, cols, getCellValue) {
   for (const term in terms) {
@@ -85,6 +109,12 @@ function filterData(rows, terms, cols, getCellValue) {
     )
   }
   return rows
+}
+
+async function applyToProject(projectName: string) {
+  submit.value = true;
+  console.log(projectName);
+//   Todo : Let a consultant apply to a project, verifying if the consultant is available
 }
 
 const opportunities = ref<CreateProjectOutput[] | undefined>()
