@@ -67,11 +67,28 @@
                                 {{ skill.name }} | {{ skill.level }}
                               </li>
                             </ul>
-                            <div class="text-center q-pt-md">
-                              <q-btn size="sm" color="white" text-color="black"
-                                     @click="addConsultantToProject(project.name, consultant.uid)">Ajouter
-                              </q-btn>
-                            </div>
+                            <ModalComponent :button="true" color="white" text-color="black" :button-attr=buttonAttr>
+                              <template #header>
+                                <h5>Participation au projet</h5>
+                              </template>
+                              <template #body>
+                                <div v-if="!success">
+                                  <p>Souhaitez-vous vraiment participer à ce projet ?</p>
+                                  <div class="text-center q-pt-md">
+                                    <q-btn size="md" color="green" text-color="white" label="Oui"
+                                           @click="addConsultantToProject(project.name, consultant.uid)"/>
+                                  </div>
+                                </div>
+                                <div v-else-if="success" class="text-center q-pb-md">
+                                  <SuccessComponent>
+                                    Vous venez d'être ajouté au projet ! :)
+                                  </SuccessComponent>
+                                </div>
+                                <div v-else-if="errorMessage">
+                                  <p class="text-red-9 text-center">{{ errorMessage }}</p>
+                                </div>
+                              </template>
+                            </ModalComponent>
                           </div>
                         </div>
                       </template>
@@ -91,20 +108,38 @@
 import {useRoute} from 'vue-router';
 import {getProject, Project} from 'src/firebase/Project';
 import {onMounted, ref} from 'vue';
-import {Consultant, getConsultantsBySkills} from 'src/firebase/Consultant';
+import {Consultant, getConsultantsBySkills, setConsultantCurrentProject} from 'src/firebase/Consultant';
 import Card from 'components/CardComponent.vue';
+import ModalComponent from 'components/ModalComponent.vue';
+import SuccessComponent from 'components/SuccessComponent.vue';
 
 const route = useRoute();
 const uid: string = route.params.uid;
+const success = ref(false);
+const errorMessage = ref('');
 
 const slide = ref(1);
 
 const project = ref<Project>();
 let consultants = ref<Consultant[] | undefined>();
-console.log(consultants)
+
+const buttonAttr = {
+  'label': 'Ajouter',
+  'color': 'white',
+  'textColor': 'black',
+  'size': 'sm'
+};
 
 async function addConsultantToProject(projectName: string, consultantUid: string) {
   console.log(projectName, consultantUid);
+
+  setConsultantCurrentProject(consultantUid, projectName).then((response) => {
+    success.value = true;
+    console.log(response);
+
+  }).catch((error) => {
+    errorMessage.value = error;
+  });
   // Todo : When we add a consultant to a project, the new state attributed is in_progress
 }
 

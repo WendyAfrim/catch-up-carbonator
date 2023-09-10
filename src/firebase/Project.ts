@@ -1,7 +1,6 @@
 import {HardSkill, LeadTechConsultant, PROJECT_STATUS, ProjectConsultant} from 'src/firebase/Types';
 import {collection, doc, getDoc, getDocs, setDoc, updateDoc} from 'firebase/firestore';
 import {db} from 'src/firebase/index';
-import {LeadTech} from 'src/firebase/LeadTech';
 
 
 export type CreateProjectOutput = {

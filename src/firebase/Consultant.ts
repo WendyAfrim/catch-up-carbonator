@@ -292,70 +292,44 @@ const getConsultantsBySkills = async (projectSkills: any) => {
   const querySnapshot = await getDocs(collection(db, 'consultants').withConverter(consultantConverter));
   const allConsultantsOutput: Array<CreateConsultantOutput> = [];
 
+  const projectAllSkills: Array<string> = [];
+
+  projectSkills.map((skill: HardSkill) => {
+    projectAllSkills.push(skill.name);
+  });
+
   querySnapshot.forEach(async (consultant) => {
-    const filteredConsultant: void | QueryDocumentSnapshot<Consultant> = await filterConsultantBySkills(projectSkills, consultant);
+    const consultantSkills: Array<string> = [];
 
-    if (filteredConsultant) {
+    if (consultant.data().skills) {
 
-      allConsultantsOutput.push(
-        {
-          uid: filteredConsultant.id,
-          fullname: filteredConsultant.data().firstname + ' ' + filteredConsultant.data().lastname,
-          email: filteredConsultant.data().email,
-          hired_as: filteredConsultant.data().hired_as,
-          begin_at: filteredConsultant.data().begin_at?.toString(),
-          skills: consultant.data().skills,
-          skillsName: filteredConsultant.data().skills?.map((skill) => {
-            return skill.name;
-          }).join(),
-          state: !filteredConsultant.data().state ? 'Occupé' : 'Disponible'
-        }
-      )
+      consultant.data().skills?.map((skill: HardSkill) => {
+        consultantSkills.push(skill.name)
+      });
+
+      const intersection: Array<string> = projectAllSkills.filter(skill => consultantSkills.includes(skill));
+
+      if (intersection.length > 0) {
+        allConsultantsOutput.push(
+          {
+            uid: consultant.id,
+            fullname: consultant.data().firstname + ' ' + consultant.data().lastname,
+            email: consultant.data().email,
+            hired_as: consultant.data().hired_as,
+            begin_at: consultant.data().begin_at?.toString(),
+            skills: consultant.data().skills,
+            skillsName: consultant.data().skills?.map((skill) => {
+              return skill.name;
+            }).join(),
+            state: !consultant.data().state ? 'Occupé' : 'Disponible'
+          }
+        )
+      }
     }
   });
 
   return allConsultantsOutput;
 }
-
-const filterConsultantBySkills = async (projectSkills: Array<HardSkill>, consultant: any): Promise<QueryDocumentSnapshot<Consultant> | void> => {
-  const projectSkill: Array<string> = [];
-  let hasConsultant = false;
-
-  projectSkills.map((skill) => {
-    projectSkill.push(skill.name);
-  });
-
-  if (consultant.data().skills) {
-    consultant.data().skills.forEach((consultantSkill: any) => {
-      if (projectSkill.includes(consultantSkill.name)) {
-        hasConsultant = true;
-        return hasConsultant;
-      } else {
-        hasConsultant = false;
-        return hasConsultant;
-      }
-      ;
-    });
-  }
-  return hasConsultant ? consultant : null;
-  // console.log(consultantSkills)
-}
-// const getConsultantsWithIds = async () => {
-//   const querySnapshot = await getDocs(collection(db, 'consultants').withConverter(consultantConverter));
-//   const allConsultants: Array<{
-//     uid: string,
-//     consultant: Consultant
-//   }> = [];
-//   querySnapshot.forEach((doc) => {
-//     allConsultants.push(
-//       {
-//         uid: doc.id,
-//         consultant: doc.data()
-//       }
-//     );
-//   });
-//   return allConsultants;
-// }
 
 const addTrainingToConsultant = async (trainingUid: string, consultantUid: string) => {
   const trainingRef = doc(db, 'trainings', trainingUid).withConverter(trainingConverter);

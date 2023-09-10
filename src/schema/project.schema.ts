@@ -20,13 +20,11 @@ export const projectSchema = object({
   skills: array(object({
     name: string(),
     level: string(),
-    nb_exp: number()
+    nb_exp: string()
   })).nonempty(),
   position:
     string()
       .nonempty('Cette valeur est obligatoire'),
-  state:
-    boolean(),
 });
 
 // Todo : Assert sur les skills
