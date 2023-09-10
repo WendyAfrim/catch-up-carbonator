@@ -106,8 +106,9 @@
                 <q-input standout="bg-green text-white" :dense="true" v-model.lazy="skill.nb_exp"
                          label="Nb expérience"/>
               </div>
-              <div v-if="errors?.skills" class="text-red-9 text-weight-bold">
-                <span>{{ errors?.skills?._errors[0] }}</span>
+              {{ errors }}
+              <div v-for="(error) in errors" :key="error" class="text-red-9 text-weight-bold">
+                <span>{{ errors?.skills }}</span>
               </div>
             </div>
           </div>
@@ -129,10 +130,8 @@ import {onMounted, reactive, ref} from 'vue';
 import {Project, createProject} from '../../firebase/Project';
 import {Level, PROJECT_STATUS} from 'src/firebase/Types';
 import SuccessComponent from 'components/SuccessComponent.vue';
-import {getLeadTechs, getLeadTechsNames, LeadTech} from 'src/firebase/LeadTech';
 import SubmitButton from 'components/Buttons/SubmitButton.vue';
 import {z} from 'zod';
-import {consultantSchema} from 'src/schema/consultant.schema';
 import {projectSchema} from 'src/schema/project.schema';
 
 const projectForm = reactive({
@@ -147,7 +146,7 @@ const projectForm = reactive({
     level: Level.Junior,
     nb_exp: 0
   }],
-  state: PROJECT_STATUS.New
+  status: PROJECT_STATUS.New
 });
 
 const emit = defineEmits(['submitProject']);
@@ -167,21 +166,23 @@ function submitProject() {
 
   if (!validSchema.success) {
     errors.value = validSchema.error.format();
+    console.log(errors);
   } else {
     errors.value = null;
 
-    const project: Project = new Project(
-      projectForm.name,
-      projectForm.client,
-      projectForm.start_at,
-      projectForm.end_at,
-      projectForm.description,
-      projectForm.skills,
-      projectForm.position,
-      projectForm.state
-    );
+    const project: Project = {
+      name: projectForm.name,
+      client: projectForm.client,
+      start_at: projectForm.start_at,
+      end_at: projectForm.end_at,
+      description: projectForm.description,
+      skills: projectForm.skills,
+      position: projectForm.position,
+      status: PROJECT_STATUS.New
+    }
 
     createProject(project).then(() => {
+      console.log('hello');
       success.value = true;
       console.log('success');
 

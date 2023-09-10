@@ -1,6 +1,7 @@
 <template>
   <div v-if="button">
-    <q-btn :label="buttonAttr.label" :color="buttonAttr.color" :text-color="buttonAttr.textColor" @click="open"/>
+    <q-btn :label="buttonAttr.label" :color="buttonAttr.color" :text-color="buttonAttr.textColor"
+           :size="buttonAttr.size" @click="open"/>
   </div>
   <span v-if="color === 'white' && !button " class="material-icons pointer cta cta__white" @click="open">
           {{ logo }}
@@ -48,6 +49,10 @@ const props = defineProps({
   },
   buttonAttr: {
     type: Object
+  },
+  size: {
+    type: String,
+    default: 'md'
   },
   title: {
     type: String
