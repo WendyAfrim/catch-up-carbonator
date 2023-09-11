@@ -43,21 +43,31 @@
                 <h5>{{ props.row.name }}</h5>
               </template>
               <template #body>
-                <h5>Poste</h5>
-                <p>{{ props.row.position }}</p>
-                <h5>Description</h5>
-                <p>{{ props.row.description }}</p>
+                <div v-if="!success">
+                  <h5>Poste</h5>
+                  <p>{{ props.row.position }}</p>
+                  <h5>Description</h5>
+                  <p>{{ props.row.description }}</p>
 
-                <h5>Compétences requises</h5>
-                <q-table
-                  title="Skills"
-                  :rows="props.row.skills"
-                  :columns="skillsColumns"
-                  row-key="name"
-                />
-                <div class="text-center q-mt-xl">
-                  <q-btn color="green" label="Postuler" :icon="submit ? 'pending' : 'send'"
-                         @click="applyToProject(props.row.name)"/>
+                  <h5>Compétences requises</h5>
+                  <q-table
+                    title="Skills"
+                    :rows="props.row.skills"
+                    :columns="skillsColumns"
+                    row-key="name"
+                  />
+                  <div class="text-center q-mt-xl">
+                    <q-btn color="green" label="Postuler" :icon="submit ? 'pending' : 'send'"
+                           @click="applyToProject(props.row.name)"/>
+                  </div>
+                </div>
+                <SuccessComponent v-else-if="success">
+                  <div class="text-center text-green-4">
+                    <p>Votre demande a bien été pris en compte !</p>
+                  </div>
+                </SuccessComponent>
+                <div v-else-if="errorMessage" class="text-red-9">
+                  <p>Une erreur est survenue</p>
                 </div>
               </template>
             </ModalComponent>
@@ -74,9 +84,17 @@
 import {onMounted, reactive, ref} from 'vue';
 import {CreateProjectOutput, getProjects, getProjectsOutput, Project} from 'src/firebase/Project';
 import ModalComponent from 'components/ModalComponent.vue';
+import {currentUserStore} from 'stores/currrent_user';
+import {setConsultantCurrentProject} from 'src/firebase/Consultant';
+import SuccessComponent from 'components/SuccessComponent.vue';
 
 const icon = ref('send');
 const submit = ref(false);
+const success = ref(false);
+
+const store = currentUserStore();
+const errorMessage = ref('');
+
 
 const columns = [
   {name: 'position', align: 'left', label: 'Poste', field: 'position', sortable: true},
@@ -113,7 +131,15 @@ function filterData(rows, terms, cols, getCellValue) {
 
 async function applyToProject(projectName: string) {
   submit.value = true;
-  console.log(projectName);
+  const consultantId = store.uid;
+  if (consultantId) {
+    setConsultantCurrentProject(consultantId, projectName).then(() => {
+      success.value = true;
+    }).catch((error) => {
+      errorMessage.value = error;
+    })
+  }
+  console.log(store.uid);
 //   Todo : Let a consultant apply to a project, verifying if the consultant is available
 }
 

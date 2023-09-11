@@ -8,62 +8,13 @@
             <template #body>
               <div class="column reverse">
                 <div class="column items-center text-center">
-                  <h5 class="text-white">Retours clients</h5>
+                  <h5 class="text-white">A venir</h5>
                   <span class="material-icons icon">
                                         groups
                                     </span>
                 </div>
                 <div class="text-right">
-                  <Modal logo="add_circle">
-                    <template #header>
-                      <h1 class="text-h5">Visualiser vos retours clients</h1>
-                    </template>
-                    <template #body>
-                      <q-table title="Retours clients" :rows="feedbackClientRows"
-                               :columns="feedbackClientColumns" row-key="name"
-                               :filter="feedbackClientFilters" :filter-method="filterData">
-                        <template v-slot:top>
-                          <q-tr>
-                            <q-td>
-                            </q-td>
-                            <q-td>
-                              <q-input outlined v-model="feedbackClientFilters.name"
-                                       label="Filtre Client" dense></q-input>
-                            </q-td>
-                          </q-tr>
-                        </template>
-                        <template v-slot:header="props">
-                          <q-tr :props="props">
-                            <q-th auto-width/>
-                            <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                              {{ col.label }}
-                            </q-th>
-                          </q-tr>
-                        </template>
-
-                        <template v-slot:body="props">
-                          <q-tr :props="props">
-                            <q-td auto-width>
-                              <q-btn size="sm" color="green" round dense
-                                     @click="props.expand = !props.expand"
-                                     :icon="props.expand ? 'remove' : 'add'"/>
-                            </q-td>
-                            <q-td v-for="col in props.cols" :key="col.name" :props="props">
-                              {{ col.value }}
-                            </q-td>
-                          </q-tr>
-                          <q-tr v-show="props.expand" :props="props">
-                            <q-td colspan="100%">
-                              <div class="text-left">
-                                Equipe : {{ props.row.skills }}
-                                <br>
-                                Retour client :
-                              </div>
-                            </q-td>
-                          </q-tr>
-                        </template>
-                      </q-table>
-                    </template>
+                  <Modal logo="add_circle" color="white">
                   </Modal>
                 </div>
               </div>
@@ -100,48 +51,13 @@
             <template #body>
               <div class="column reverse">
                 <div class="column items-center">
-                  <h5 class="text-white">Parcours</h5>
+                  <h5 class="text-white">A venir</h5>
                   <span class="icon material-icons">
-                                        grade
-                                    </span>
+                    grade
+                  </span>
                 </div>
                 <div class="text-right">
                   <Modal logo="add_circle">
-                    <template #header>
-                      <h1 class="text-h5">Ajouter une nouvelle formation</h1>
-                    </template>
-                    <template #body>
-                                            <span class="q-px-md">Veuillez renseigner toutes les informations relatives à
-                                                la formation
-                                            </span>
-                      <div class="row">
-                        <div class="col-12 col-md-12">
-                          <div class="q-py-md q-px-md">
-                            <q-input standout="bg-green text-white" :dense="true" v-model="text"
-                                     label="Nom de la formation"/>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-12 col-md-12">
-                          <div class="q-py-md q-px-md">
-                            <q-input v-model="text" filled standout="bg-green text-white"
-                                     label="Lien"/>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-12 col-md-12">
-                          <div class="q-py-md q-px-md">
-                            <q-select standout="bg-green text-white" v-model="model"
-                                      :options="options" label="Standard"/>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="text-right">
-                        <q-btn color="green" label="Créer la formation" class="q-my-md"></q-btn>
-                      </div>
-                    </template>
                   </Modal>
                 </div>
               </div>
@@ -177,42 +93,52 @@
                 <h6 class="q-ma-xs">{{ project.name }}</h6>
                 <Modal :title="project.name" :button=true :button-attr=buttonAttr>
                   <template #body>
-                    <div class="row">
-                      <div class="col-12 col-md-6">
-                        <div class="column">
-                          <h5>Client</h5>
-                          <p>{{ project.client }}</p>
-                          <!--                            <q-separator spaced/>-->
-                          <h5>Dates</h5>
+                    <div v-if="!success">
+                      <div class="row">
+                        <div class="col-12 col-md-6">
                           <div class="column">
-                            <div class="col-12 col-md-6">
-                              <span>Date de début :</span>
-                              {{ project.start_at }}
+                            <h5>Client</h5>
+                            <p>{{ project.client }}</p>
+                            <!--                            <q-separator spaced/>-->
+                            <h5>Dates</h5>
+                            <div class="column">
+                              <div class="col-12 col-md-6">
+                                <span>Date de début :</span>
+                                {{ project.start_at }}
+                              </div>
+                              <div class="col-12 col-md-6">
+                                <span>Date de fin :</span>
+                                {{ project.end_at }}
+                              </div>
                             </div>
-                            <div class="col-12 col-md-6">
-                              <span>Date de fin :</span>
-                              {{ project.end_at }}
-                            </div>
-                          </div>
 
+                          </div>
+                        </div>
+                        <q-separator spaced vertical="vertical"/>
+                        <div class="col-12 col-md-4">
+                          <div class="column">
+                            <h5>Description</h5>
+                            <p>{{ project.description }}</p>
+                            <h5>Stack</h5>
+                            <ul>
+                              <li v-for="(skill) in project.skills" :key="skill.name">{{ skill.name }}</li>
+                            </ul>
+                          </div>
                         </div>
                       </div>
-                      <q-separator spaced vertical="vertical"/>
-                      <div class="col-12 col-md-4">
-                        <div class="column">
-                          <h5>Description</h5>
-                          <p>{{ project.description }}</p>
-                          <h5>Stack</h5>
-                          <ul>
-                            <li v-for="(skill) in project.skills" :key="skill.name">{{ skill.name }}</li>
-                          </ul>
+                      <div class="text-center q-mt-xl">
+                        <div v-if="errorMessage">
+                          <p class="text-red-9 text-center">{{ errorMessage }}</p>
                         </div>
+                        <SubmitButton label="Je participe au projet" :submit="submit"
+                                      @click="subscribeProject(project.name)"
+                        />
                       </div>
                     </div>
-                    <div class="text-center q-mt-xl">
-                      <SubmitButton label="Je participe au projet" :submit="submit"
-                                    @click="subscribeProject(project.name)"
-                      />
+                    <div class="text-green-4 text-center" v-else-if="success">
+                      <SuccessComponent>
+                        <p>Vous avez bien été ajouté au projet ! :)</p>
+                      </SuccessComponent>
                     </div>
                   </template>
                 </Modal>
@@ -236,7 +162,6 @@
           </template>
 
           <template v-slot:body="props">
-            <!--            {{ props }}-->
             <q-tr :props="props">
               <q-td auto-width>
                 <ModalComponent logo="visibility" color="green">
@@ -244,44 +169,57 @@
                     <h5>{{ props.row.project }}</h5>
                   </template>
                   <template #body>
-                    <div class="row">
-                      <div class="col-12 col-md-6">
-                        <div class="column">
-                          <h5>Client</h5>
-                          <ul>
-                            <li>Ville de Paris</li>
-                          </ul>
-                          <h5>Description</h5>
-                          <p>PXO est une société spécialisée dans le domaine du Web. Nous nous intéressons en
-                            particulier au domaine du numérique et des médias pour enrichir l’expérience
-                            utilisateur. </p>
+                    <div v-if="!success">
+                      <div class="row">
+                        <div class="col-12 col-md-6">
+                          <div class="column">
+                            <h5>Client</h5>
+                            <ul>
+                              <li>Ville de Paris</li>
+                            </ul>
+                            <h5>Equipes</h5>
+                            <ul>
+                              <li v-for="(consultant, i) in user.project.team" :key="i">{{ consultant.position }} - {{ consultant.firstname }} - {{ consultant.email}}</li>
+                            </ul>
+                            <h5>Description</h5>
+                            <p>PXO est une société spécialisée dans le domaine du Web. Nous nous intéressons en
+                              particulier au domaine du numérique et des médias pour enrichir l’expérience
+                              utilisateur. </p>
+                          </div>
+                        </div>
+                        <q-separator spaced vertical="vertical"/>
+                        <div class="col-12 col-md-5">
+                          <div class="text-center">
+                            <h5>Consultant</h5>
+                            <q-avatar size="5em">
+                              <img src="https://cdn.quasar.dev/img/avatar.png">
+                            </q-avatar>
+                            <ul>
+                              <li>Nom : Anne Laure</li>
+                              <li>Poste : Developpeuse JS Fullstack</li>
+                            </ul>
+                            <div v-if="!leadtechProject.clientFeedback">
+                              <h5>Retour client :</h5>
+                              <q-input
+                                v-model="feedback"
+                                filled
+                                autogrow
+                                type="textarea"
+                              />
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <q-separator spaced vertical="vertical"/>
-                      <div class="col-12 col-md-5">
-                        <div class="text-center">
-                          <h5>Consultant</h5>
-                          <q-avatar size="5em">
-                            <img src="https://cdn.quasar.dev/img/avatar.png">
-                          </q-avatar>
-                          <ul>
-                            <li>Nom : Anne Laure</li>
-                            <li>Poste : Developpeuse JS Fullstack</li>
-                          </ul>
-                          <h5>Retour client :</h5>
-                          <q-input
-                            v-model="feedback"
-                            filled
-                            autogrow
-                            type="textarea"
-                          />
-                        </div>
+                      <div class="row justify-center">
+                        <SubmitButton label="Enregistrer" color="green" class="q-mx-xs q-mt-xl"
+                                      :submit="submit"
+                                      @click="postFeedback(user.project.name ,feedback)"></SubmitButton>
                       </div>
                     </div>
-                    <div class="row justify-center">
-                      <SubmitButton label="Enregistrer" color="green" class="q-mx-xs q-mt-xl"
-                                    :submit="submit"
-                                    @click="postFeedback('Anne Laure','Project' ,feedback)"></SubmitButton>
+                    <div v-else class="text-green-4 text-center">
+                      <SuccessComponent>
+                        <p>Votre retour client a bien été enregistré !</p>
+                      </SuccessComponent>
                     </div>
                   </template>
                 </ModalComponent>
@@ -401,13 +339,21 @@ import Modal from 'src/components/ModalComponent.vue';
 import AddChallengeForm from 'components/Forms/LeadTech/AddChallengeForm.vue';
 import AddTrainingForm from 'components/Forms/AddTrainingForm.vue';
 import SubmitButton from 'components/Buttons/SubmitButton.vue';
-import {CreateProjectOutput, getProjectsOutput, Project} from 'src/firebase/Project';
+import {addFeedBack, CreateProjectOutput, getProject, getProjectsOutput, Project} from 'src/firebase/Project';
 import {currentUserStore} from 'stores/currrent_user';
 import ModalComponent from 'components/ModalComponent.vue';
+import {PROJECT_STATUS} from 'src/firebase/Types';
+import {setLeadTechProject} from "src/firebase/LeadTech";
+import SuccessComponent from "components/SuccessComponent.vue";
 
 const submit = ref(false);
+const success = ref(false);
+const errorMessage = ref('');
+
 const slide = ref(1);
 const store = currentUserStore();
+const user = store.currentUser;
+const leadTechProjectName = user.project.name;
 
 const columns = [
   {name: 'consultant', align: 'center', label: 'Consultant', field: 'consultant', sortable: true},
@@ -425,52 +371,16 @@ const rows = [
 const teamsColumns = [
   {name: 'project', align: 'left', label: 'Projet', field: 'project', sortable: true},
   {name: 'client', align: 'center', label: 'Client', field: 'client', sortable: true},
-  {name: 'consultant', align: 'center', label: 'Consultant', field: 'consultant', sortable: true},
 
 ]
 
 const teamsRows = [
   {
-    project: 'Projet JO 2024',
-    client: 'Ville de Paris',
-    consultant: 'Jordy',
+    project: user?.project.name,
+    client: user?.project.client,
   },
 ]
 
-const feedback = ref('');
-
-// const feedbackClientColumns = [
-//   {
-//     name: 'client',
-//     required: true,
-//     label: 'Client',
-//     align: 'left',
-//     field: 'client',
-//     sortable: true
-//   },
-//   {name: 'project', align: 'center', label: 'Nom du projet', field: 'project', sortable: true},
-//   {name: 'begin_at', align: 'center', label: 'Date de début', field: 'begin_at', sortable: true},
-//   {name: 'end_at', label: 'Date de fin', field: 'end_at'},
-// ]
-//
-// const feedbackClientRows = [
-//   {
-//     client: 'Total',
-//     project: 'Hydra',
-//     begin_at: '13/01/2022',
-//     end_at: '16/08/2023'
-//   },
-//   {
-//     client: 'Danone',
-//     project: 'Boom',
-//     begin_at: '05/01/2021',
-//     end_at: '01/08/2023'
-//   },
-// ]
-//
-// const feedbackClientFilters = reactive({
-//   name: '',
-// })
 
 const buttonAttr = {
   'label': 'En savoir plus',
@@ -488,10 +398,20 @@ function filterData(rows, terms, cols, getCellValue) {
 }
 
 const projects = ref<CreateProjectOutput[] | undefined>();
+const leadtechProject = ref<Project | undefined>();
 
+const feedback = ref('');
 async function subscribeProject(projectName: string) {
   submit.value = true;
-  const user = store.currentUser;
+  const leadtechUid = store.uid;
+
+  if (leadtechUid) {
+    setLeadTechProject(leadtechUid, projectName).then(() => {
+      success.value = true;
+    }).catch((error) => {
+      errorMessage.value = error;
+    })
+  }
 }
 
 async function acceptCareer(career: string, consultant: string) {
@@ -504,13 +424,21 @@ async function refuseCareer(career: string, consultant: string) {
 
 }
 
-async function postFeedback(consultant: string, project: string, feedback: string) {
+async function postFeedback(project: string, feedback: string) {
   submit.value = true;
-  console.log(consultant, project, feedback);
+  addFeedBack(project, feedback).then(() => {
+    success.value = true;
+  }).catch((error) => {
+    errorMessage.value = error;
+  })
 }
 
+
 onMounted(async () => {
-  projects.value = await getProjectsOutput();
+  projects.value = await getProjectsOutput(PROJECT_STATUS.In_Progress);
+  if (leadTechProjectName) {
+    leadtechProject.value = await getProject(leadTechProjectName);
+  }
 })
 
 </script>

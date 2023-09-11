@@ -67,6 +67,7 @@
                 <Modal title="Challenge du mois" logo="visibility" color="green">
                   <template #body>
                     <ChallengeModal
+                      :name="challenge.name"
                       :start_at="challenge.start_at"
                       :end_at="challenge.delay"
                       :description="challenge.description"
@@ -102,7 +103,10 @@
                     <h5>Projet Danone</h5>
                   </template>
                   <template #body>
-                    <p>
+                    <p v-if="project.clientFeedback">
+                      {{ project.clientFeedback }}
+                    </p>
+                    <p v-else>
                       Vous n'avez aucun retour client pour le moment.
                     </p>
                   </template>
@@ -111,20 +115,15 @@
               <q-card-section horizontal>
                 <q-card-section class="q-pt-xs">
                   <h5>Mon projet actuel</h5>
-                  <ul>
-                    <li>Client : Danone</li>
-                    <li>Date de début de contrat : 01 Janvier 2023</li>
-                    <li>Date de fin de contrat : 18 Novembre 2023</li>
-                    <li>CTO du projet : Antoine Lecomte</li>
+                  <ul v-if="user.currentProject">
+                    <li>Client : {{ user.currentProject.client }}</li>
+                    <li>Date de début de contrat : {{ user?.currentProject.start_at }}</li>
+                    <li>Date de fin de contrat : {{ user?.currentProject.end_at }}</li>
+                    <li>CTO du projet : {{ user?.currentProject.leadTech ?? 'Non défini' }}</li>
                   </ul>
+                  <p v-else>Vous n'êtes affecté à aucun projet pour le moment.</p>
                 </q-card-section>
               </q-card-section>
-
-              <!--              <div class="q-pa-md q-gutter-sm">-->
-              <!--                <router-link to="/challenge/">-->
-              <!--                  <q-btn color="green" text-color="white" label="Details"/>-->
-              <!--                </router-link>-->
-              <!--              </div>-->
             </template>
           </Card>
         </div>
@@ -160,7 +159,7 @@
                       <img :src="`https://cdn.quasar.dev/img/avatar${i + 1}.jpg`" class="text-center">
                     </q-avatar>
                     <h6 class="q-ma-xs">{{ career.position }}</h6>
-                    <Modal :title="career.position" button="true" :button-attr=buttonAttr>
+                    <Modal :title="career.position" :button=true :button-attr=buttonAttr>
                       <template #body>
                         <h5>Description</h5>
                         <p>{{ career.description }}</p>
@@ -272,28 +271,24 @@
               </q-card-section>
             </q-card-section>
 
-            <div class="row q-pa-md items-center">
-              <div class="col col-3">
-                <span>Kubernetes</span>
-              </div>
+            <div v-if="user.trainings">
+              <div class="row q-pa-md items-center" v-for="(training, i) in user.trainings" :key="i" >
+                <div class="col col-3">
+                  <span>{{ training.name }}</span>
+                </div>
 
-              <div class="col col-9 q-px-md text-right">
-                <q-chip clickable color="green" text-color="white" icon="check">
-                  Terminé
-                </q-chip>
+                <div class="col col-9 q-px-md text-right">
+                  <q-chip clickable color="primary" text-color="white" icon="check" v-if="training.isStarted == 'Started'">
+                    Commencé
+                  </q-chip>
+                  <q-chip clickable color="green" text-color="white" icon="check" v-else>
+                    Terminé
+                  </q-chip>
+                </div>
               </div>
             </div>
-
-            <div class="row q-pa-md items-center justify-between">
-              <div class="col col-3">
-                <div class="text-h7">Docker</div>
-              </div>
-
-              <div class="col col-9 q-px-md text-right">
-                <q-chip clickable color="primary" text-color="white" icon="check">
-                  Commencé
-                </q-chip>
-              </div>
+            <div v-else>
+              <p>Vous ne vous êtes inscrit à aucune formation pour le moment.</p>
             </div>
           </q-card>
         </div>
@@ -303,25 +298,31 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed, onMounted} from 'vue';
+import {ref, onMounted} from 'vue';
 import Card from 'components/CardComponent.vue';
 import Modal from 'components/ModalComponent.vue'
-import {log} from 'console';
 import AddSkillsForm from 'components/Forms/AddSkillsForm.vue';
 import {Challenge, getActiveChallenge} from 'src/firebase/Challenge';
-import {Training} from 'src/firebase/Training';
 import ChallengeModal from 'components/Modal/ChallengeModal.vue';
 
 import {currentUserStore} from 'stores/currrent_user';
 import {Career, getCareers} from 'src/firebase/Careers';
 import SubmitButton from 'components/Buttons/SubmitButton.vue';
+import {getProject, Project} from 'src/firebase/Project';
 
 const store = currentUserStore();
+const user = store.currentUser;
+
+console.log(user);
+
+
 let icon = ref('verified');
 const slide = ref(1);
 const submit = ref(false);
 
-const activeChallenge = ref<Challenge[]>()
+const activeChallenge = ref<Challenge[]>();
+const project = ref<Project>();
+console.log(project);
 
 const consultantSkills = store?.currentUser?.skills;
 const careers = ref<Career[] | undefined>();
@@ -349,6 +350,7 @@ onMounted(async () => {
   await store.monitorAuthState();
   activeChallenge.value = await getActiveChallenge();
   careers.value = await getCareers();
+  project.value = await getProject(user.currentProject.name);
 })
 
 </script>
@@ -395,7 +397,12 @@ onMounted(async () => {
 }
 
 .cta {
-  color: $green;
+
+  color: $dark;
+
+  &__green {
+    color: $green;
+  }
 
   &__red {
     color: $red;

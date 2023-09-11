@@ -23,8 +23,8 @@
     <q-page-container>
       <div class="q-pa-md q-gutter-sm">
         <q-breadcrumbs>
-          <q-breadcrumbs-el v-if="store.currentUser && store.currentUser.roles == 'RH'" icon="home" to="/Rh"/>
-          <q-breadcrumbs-el v-else-if="store.currentUser && store.currentUser.roles == 'Consultant'" icon="home"
+          <q-breadcrumbs-el v-if="store.currentUser && store.roles == 'RH'" icon="home" to="/Rh"/>
+          <q-breadcrumbs-el v-else-if="store.currentUser && store.roles == 'Consultant'" icon="home"
                             to="/Consultant"/>
           <q-breadcrumbs-el v-else icon="home" to="/LeadTech"/>
         </q-breadcrumbs>

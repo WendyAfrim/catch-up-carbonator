@@ -12,13 +12,15 @@
             <q-card-section>
               <div class="text-h6">{{ training.name }}</div>
               <div class="text-right">
-                <SubmitButton label="M'inscrire" @click="subscribeToTraining(training.name)" :submit="click"/>
+                <SubmitButton label="M'inscrire" @click="subscribeToTraining(training.name)" :submit="submit"/>
               </div>
+              <SuccessComponent v-if="success">
+                <p class="text-green-8">Votre inscription a bien été prise en compte !</p>
+              </SuccessComponent>
             </q-card-section>
           </template>
         </Card>
       </div>
-      <!--      </div>-->
     </div>
   </div>
 </template>
@@ -27,14 +29,30 @@ import Card from 'components/CardComponent.vue';
 import {onMounted, ref} from 'vue';
 import {getTrainings, Training} from 'src/firebase/Training';
 import SubmitButton from 'components/Buttons/SubmitButton.vue';
+import {currentUserStore} from "stores/currrent_user";
+import {addTrainingToConsultant} from "src/firebase/Consultant";
+import SuccessComponent from "components/SuccessComponent.vue";
 
-const click = ref(false)
+const submit = ref(false);
+const success = ref(false);
+const errorMessage = ref('');
+
 const trainings = ref<Training[] | undefined>();
+const store = currentUserStore();
 console.log(trainings);
 
 async function subscribeToTraining(trainingName: string) {
-  click.value = true;
+  submit.value = true;
 //   Todo : Subscribe to a training
+  const consultantUid = store.uid;
+
+  if (consultantUid) {
+    addTrainingToConsultant(trainingName, consultantUid).then(() => {
+      success.value = true;
+    }).catch((error) => {
+      errorMessage.value = error;
+    })
+  }
 }
 
 onMounted(async () => {

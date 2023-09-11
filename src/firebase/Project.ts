@@ -1,5 +1,5 @@
 import {HardSkill, LeadTechConsultant, PROJECT_STATUS, ProjectConsultant} from 'src/firebase/Types';
-import {collection, doc, getDoc, getDocs, setDoc, updateDoc} from 'firebase/firestore';
+import {collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where} from 'firebase/firestore';
 import {db} from 'src/firebase/index';
 
 
@@ -121,8 +121,12 @@ const createProject = async (project: Project) => {
   return await setDoc(doc(projectsRef, project.name), project);
 }
 
-const getProjects = async () => {
-  const querySnapshot = await getDocs(collection(db, 'projects').withConverter(projectConverter));
+const getProjects = async (status: string) => {
+
+  status = status ?? PROJECT_STATUS.New;
+  const q = query(collection(db, 'projects'), where('status', '==', status));
+  const querySnapshot = await getDocs(q.withConverter(projectConverter));
+
   const allProject: Array<Project> = [];
   querySnapshot.forEach((doc) => {
     // doc.data() is never undefined for query doc snapshots
@@ -131,8 +135,9 @@ const getProjects = async () => {
   return allProject;
 }
 
-const getProjectsOutput = async () => {
-  const allProjects: Array<Project> = await getProjects();
+const getProjectsOutput = async (status: string) => {
+  status = status ?? PROJECT_STATUS.New;
+  const allProjects: Array<Project> = await getProjects(status);
   const allProjectsOutput: Array<CreateProjectOutput> = [];
   allProjects.map((project) => {
     allProjectsOutput.push(
@@ -153,7 +158,6 @@ const getProjectsOutput = async () => {
       }
     )
   })
-  console.log('in ', allProjectsOutput)
   return allProjectsOutput;
 }
 
@@ -176,5 +180,6 @@ export {
   getProject,
   getProjects,
   getProjectsOutput,
+  addFeedBack,
   projectConverter
 }
