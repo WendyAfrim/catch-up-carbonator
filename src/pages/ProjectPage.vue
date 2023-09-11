@@ -29,6 +29,13 @@
                   </div>
                 </template>
               </Card>
+              <Card v-else-if="project?.status == 'in_progress'">
+                <template #body>
+                  <div class="q-pa-xl text-center">
+                    <span>Un consultant a déjà été attribué à ce projet</span>
+                  </div>
+                </template>
+              </Card>
               <q-carousel
                 v-model="slide"
                 transition-prev="scale"
@@ -81,7 +88,7 @@
                                 </div>
                                 <div v-else-if="success" class="text-center q-pb-md">
                                   <SuccessComponent>
-                                    Vous venez d'être ajouté au projet ! :)
+                                    <p class="text-green-4">Vous venez d'être ajouté au projet ! :)</p>
                                   </SuccessComponent>
                                 </div>
                                 <div v-else-if="errorMessage">
@@ -133,14 +140,12 @@ const buttonAttr = {
 async function addConsultantToProject(projectName: string, consultantUid: string) {
   console.log(projectName, consultantUid);
 
-  setConsultantCurrentProject(consultantUid, projectName).then((response) => {
+  setConsultantCurrentProject(consultantUid, projectName).then(() => {
     success.value = true;
-    console.log(response);
 
   }).catch((error) => {
     errorMessage.value = error;
   });
-  // Todo : When we add a consultant to a project, the new state attributed is in_progress
 }
 
 

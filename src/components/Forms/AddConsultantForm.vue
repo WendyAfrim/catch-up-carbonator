@@ -89,7 +89,7 @@ const consultantForm = reactive({
   lastname: '',
   email: '',
   hired_as: '',
-  state: ref(false),
+  state: ref(true),
   begin_at: ref('2023/01/01'),
 });
 

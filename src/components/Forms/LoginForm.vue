@@ -43,8 +43,6 @@
                     clearable
                     v-model="loginForm.email"
                     type="email"
-                    lazy-rules
-                    :rules="[this.required,this.isEmail,this.short]"
                     label="Email">
                     <template v-slot:prepend>
                       <q-icon name="email"/>
@@ -56,14 +54,13 @@
                     clearable
                     v-model="loginForm.password" type="password"
                     lazy-rules
-                    :rules="[this.required,this.short]"
                     label="Mot de passe">
 
                     <template v-slot:prepend>
                       <q-icon name="lock"/>
                     </template>
                   </q-input>
-                  <div class="text-center">
+                  <div class="text-center q-ma-md">
                     <p v-if="errorMessage" class="text-red-8">{{ errorMessage }}</p>
                     <q-btn
                       :icon="submit ? 'pending' : 'power' "

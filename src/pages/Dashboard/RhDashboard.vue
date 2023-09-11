@@ -296,10 +296,27 @@
                     <q-item-label lines="1">{{ career.position }}</q-item-label>
                   </q-item-section>
 
-                  <q-item-section side>
-                    <q-icon name="edit_note" color="green"/>
-                  </q-item-section>
-                  <q-separator spaced/>
+                  <ModalComponent logo="visibility" color="green">
+                    <template #header>
+                      <h5>{{ career.position }}</h5>
+                    </template>
+                    <template #body>
+                      <h5>Description</h5>
+                      <p>{{ career.description }}</p>
+                      <q-separator spaced/>
+                      <h5>Objectifs</h5>
+                      <ul>
+                        <li v-for="(goal,i) in career.goals" :key="i">{{ goal.name }}</li>
+                      </ul>
+                      <q-separator spaced/>
+                      <h5>Pré-requis</h5>
+                      <p>{{ career.prerequisite }}</p>
+                    </template>
+                  </ModalComponent>
+
+                  <!--                  <q-item-section side>-->
+                  <!--                    <q-icon name="visibility" color="green"/>-->
+                  <!--                  </q-item-section>-->
                 </q-item>
               </q-list>
             </div>
@@ -326,6 +343,7 @@ import {useRouter} from 'vue-router';
 import AddLeadTechForm from 'components/Forms/AddLeadTechForm.vue';
 import AddHRForm from 'components/Forms/AddHRForm.vue';
 import {Career, getCareers} from 'src/firebase/Careers';
+import ModalComponent from 'components/ModalComponent.vue';
 
 let display = ref('');
 
@@ -400,8 +418,6 @@ const consultants = ref<CreateConsultantOutput[] | undefined>()
 const trainings = ref<Training[] | undefined>()
 const projects = ref<Project[] | undefined>()
 const careers = ref<Career[] | undefined>()
-
-console.log(careers);
 
 onMounted(async () => {
   consultants.value = await getConsultantsOutput();

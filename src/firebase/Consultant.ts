@@ -46,6 +46,7 @@ type Job = {
 }
 
 export class Consultant {
+  uid: string;
   firstname: string;
   lastname: string;
   email: string;
@@ -60,6 +61,7 @@ export class Consultant {
   position?: string;
 
   constructor(
+    uid: string,
     firstname: string,
     lastname: string,
     email: string,
@@ -73,6 +75,7 @@ export class Consultant {
     trainings?: Array<ConsultantTraining>,
     position?: string,
   ) {
+    this.uid = uid;
     this.firstname = firstname;
     this.lastname = lastname;
     this.email = email;
@@ -88,13 +91,14 @@ export class Consultant {
   }
 
   toString() {
-    return this.firstname + ', ' + this.lastname + ', ' + this.state + ', ' + this.email;
+    return this.uid + ', ' + this.firstname + ', ' + this.lastname + ', ' + this.state + ', ' + this.email;
   }
 }
 
 const consultantConverter = {
   toFirestore: (consultant: Consultant) => {
     return {
+      uid: consultant.uid,
       firstname: consultant.firstname,
       lastname: consultant.lastname,
       email: consultant.email,
@@ -112,6 +116,7 @@ const consultantConverter = {
   fromFirestore: (snapshot: any, options: any) => {
     const data = snapshot.data(options);
     return new Consultant(
+      data.id,
       data.firstname,
       data.lastname,
       data.email,
@@ -129,6 +134,7 @@ const consultantConverter = {
 };
 const getConsultant = async (uid: string) => {
   const consultantRef = doc(db, 'consultants', uid).withConverter(consultantConverter);
+  console.log(consultantRef);
   const consultantSnap = await getDoc(consultantRef);
   if (consultantSnap.exists()) {
     const consultant: Consultant = consultantSnap.data();
@@ -281,11 +287,11 @@ const setConsultantCurrentProject = async (consultantUid: string, projectUid: st
     team: arrayUnion({
       firstname: consultant.firstname,
       lastname: consultant.lastname,
-      email: consultant.email
-      ,
+      email: consultant.email,
       position: consultant.position
     })
   })
+  return project;
 }
 
 const getConsultantsBySkills = async (projectSkills: any) => {
@@ -301,7 +307,7 @@ const getConsultantsBySkills = async (projectSkills: any) => {
   querySnapshot.forEach(async (consultant) => {
     const consultantSkills: Array<string> = [];
 
-    if (consultant.data().skills) {
+    if (consultant.data().skills && consultant.data().state === true) {
 
       consultant.data().skills?.map((skill: HardSkill) => {
         consultantSkills.push(skill.name)

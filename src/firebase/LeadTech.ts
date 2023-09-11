@@ -122,23 +122,28 @@ const setLeadTechProject = async (leadTechUid: string, projectUid: string) => {
     console.error(`Project: ${projectUid} not exist`);
     return null;
   }
-  const project: Project = projectSnap.data();
-  await updateDoc(leadTechRef, {
-    project: {
-      name: project.name,
-      client: project.client,
-      start_at: project.start_at,
-      end_at: project.end_at,
-      team: project.team
-    }
-  });
-  await updateDoc(projectRef, {
-    leadTech: {
-      firstname: leadTech.firstname,
-      lastname: leadTech.lastname,
-      email: leadTech.email
-    }
-  });
+
+  if (!leadTech.project) {
+    const project: Project = projectSnap.data();
+    await updateDoc(leadTechRef, {
+      project: {
+        name: project.name,
+        client: project.client,
+        start_at: project.start_at,
+        end_at: project.end_at,
+        team: project.team
+      }
+    });
+    await updateDoc(projectRef, {
+      leadTech: {
+        firstname: leadTech.firstname,
+        lastname: leadTech.lastname,
+        email: leadTech.email
+      }
+    });
+  } else {
+    throw new Error('Vous êtes déjà assigné à un projet');
+  }
 }
 
 
