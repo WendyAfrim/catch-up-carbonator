@@ -179,7 +179,9 @@
                             </ul>
                             <h5>Equipes</h5>
                             <ul>
-                              <li v-for="(consultant, i) in user.project.team" :key="i">{{ consultant.position }} - {{ consultant.firstname }} - {{ consultant.email}}</li>
+                              <li v-for="(consultant, i) in user.project.team" :key="i">{{ consultant.position }} -
+                                {{ consultant.firstname }} - {{ consultant.email }}
+                              </li>
                             </ul>
                             <h5>Description</h5>
                             <p>PXO est une société spécialisée dans le domaine du Web. Nous nous intéressons en
@@ -343,8 +345,8 @@ import {addFeedBack, CreateProjectOutput, getProject, getProjectsOutput, Project
 import {currentUserStore} from 'stores/currrent_user';
 import ModalComponent from 'components/ModalComponent.vue';
 import {PROJECT_STATUS} from 'src/firebase/Types';
-import {setLeadTechProject} from "src/firebase/LeadTech";
-import SuccessComponent from "components/SuccessComponent.vue";
+import {setLeadTechProject} from 'src/firebase/LeadTech';
+import SuccessComponent from 'components/SuccessComponent.vue';
 
 const submit = ref(false);
 const success = ref(false);
@@ -353,7 +355,7 @@ const errorMessage = ref('');
 const slide = ref(1);
 const store = currentUserStore();
 const user = store.currentUser;
-const leadTechProjectName = user.project.name;
+// const leadTechProjectName = user?.project?.name;
 
 const columns = [
   {name: 'consultant', align: 'center', label: 'Consultant', field: 'consultant', sortable: true},
@@ -374,12 +376,12 @@ const teamsColumns = [
 
 ]
 
-const teamsRows = [
-  {
-    project: user?.project.name,
-    client: user?.project.client,
-  },
-]
+// const teamsRows = [
+//   {
+//     project: user?.project.name,
+//     client: user?.project.client,
+//   },
+// ]
 
 
 const buttonAttr = {
@@ -401,6 +403,7 @@ const projects = ref<CreateProjectOutput[] | undefined>();
 const leadtechProject = ref<Project | undefined>();
 
 const feedback = ref('');
+
 async function subscribeProject(projectName: string) {
   submit.value = true;
   const leadtechUid = store.uid;
@@ -436,9 +439,9 @@ async function postFeedback(project: string, feedback: string) {
 
 onMounted(async () => {
   projects.value = await getProjectsOutput(PROJECT_STATUS.In_Progress);
-  if (leadTechProjectName) {
-    leadtechProject.value = await getProject(leadTechProjectName);
-  }
+  // if (leadTechProjectName) {
+  //   leadtechProject.value = await getProject(leadTechProjectName);
+  // }
 })
 
 </script>
