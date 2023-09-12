@@ -46,7 +46,6 @@ type Job = {
 }
 
 export class Consultant {
-  uid: string;
   firstname: string;
   lastname: string;
   email: string;
@@ -61,7 +60,6 @@ export class Consultant {
   position?: string;
 
   constructor(
-    uid: string,
     firstname: string,
     lastname: string,
     email: string,
@@ -75,7 +73,6 @@ export class Consultant {
     trainings?: Array<ConsultantTraining>,
     position?: string,
   ) {
-    this.uid = uid;
     this.firstname = firstname;
     this.lastname = lastname;
     this.email = email;
@@ -91,14 +88,13 @@ export class Consultant {
   }
 
   toString() {
-    return this.uid + ', ' + this.firstname + ', ' + this.lastname + ', ' + this.state + ', ' + this.email;
+    return this.firstname + ', ' + this.lastname + ', ' + this.state + ', ' + this.email;
   }
 }
 
 const consultantConverter = {
   toFirestore: (consultant: Consultant) => {
     return {
-      uid: consultant.uid,
       firstname: consultant.firstname,
       lastname: consultant.lastname,
       email: consultant.email,
@@ -116,7 +112,6 @@ const consultantConverter = {
   fromFirestore: (snapshot: any, options: any) => {
     const data = snapshot.data(options);
     return new Consultant(
-      data.id,
       data.firstname,
       data.lastname,
       data.email,
@@ -204,7 +199,7 @@ const getConsultants = async () => {
   return allConsultants;
 }
 const getConsultantsOutput = async () => {
-  const querySnapshot = await getDocs(collection(db, 'consultants').withConverter(consultantConverter));
+  const querySnapshot = await getDocs(collection(db, 'consultants'));
   const allConsultantsOutput: Array<CreateConsultantOutput> = [];
   querySnapshot.forEach((consultant) => {
     allConsultantsOutput.push(
@@ -215,7 +210,7 @@ const getConsultantsOutput = async () => {
         hired_as: consultant.data().hired_as,
         begin_at: consultant.data().begin_at?.toString(),
         skills: consultant.data().skills,
-        skillsName: consultant.data().skills?.map((skill) => {
+        skillsName: consultant.data().skills?.map((skill: HardSkill) => {
           return skill.name;
         }).join(),
         state: !consultant.data().state ? 'Occupé' : 'Disponible'

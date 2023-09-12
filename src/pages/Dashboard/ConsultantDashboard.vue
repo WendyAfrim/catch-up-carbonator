@@ -100,7 +100,7 @@
               <div class="text-right">
                 <Modal logo="visibility" color="green">
                   <template #header>
-                    <h5>Projet Danone</h5>
+                    <h5>{{ project.name }}</h5>
                   </template>
                   <template #body>
                     <p v-if="project.clientFeedback">

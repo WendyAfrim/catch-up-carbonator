@@ -9,7 +9,6 @@ export const careerSchema = object({
   description:
     string()
       .min(15, {message: 'Minimum 15 caractères'})
-      .max(50, {message: 'Maximum 50 caractères'})
       .nonempty(),
   prerequisite:
     string()

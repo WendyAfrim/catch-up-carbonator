@@ -76,11 +76,11 @@
                             </ul>
                             <ModalComponent :button="true" color="white" text-color="black" :button-attr=buttonAttr>
                               <template #header>
-                                <h5>Participation au projet</h5>
+                                <h5>Affectation de consultant</h5>
                               </template>
                               <template #body>
                                 <div v-if="!success">
-                                  <p>Souhaitez-vous vraiment participer à ce projet ?</p>
+                                  <p>Souhaitez-vous vraiment positionner ce consultant sur ce projet ?</p>
                                   <div class="text-center q-pt-md">
                                     <q-btn size="md" color="green" text-color="white" label="Oui"
                                            @click="addConsultantToProject(project.name, consultant.uid)"/>
@@ -115,7 +115,12 @@
 import {useRoute} from 'vue-router';
 import {getProject, Project} from 'src/firebase/Project';
 import {onMounted, ref} from 'vue';
-import {Consultant, getConsultantsBySkills, setConsultantCurrentProject} from 'src/firebase/Consultant';
+import {
+  Consultant,
+  CreateConsultantInput,
+  getConsultantsBySkills,
+  setConsultantCurrentProject
+} from 'src/firebase/Consultant';
 import Card from 'components/CardComponent.vue';
 import ModalComponent from 'components/ModalComponent.vue';
 import SuccessComponent from 'components/SuccessComponent.vue';
@@ -128,7 +133,7 @@ const errorMessage = ref('');
 const slide = ref(1);
 
 const project = ref<Project>();
-let consultants = ref<Consultant[] | undefined>();
+let consultants = ref<CreateConsultantInput[] | undefined>();
 
 const buttonAttr = {
   'label': 'Ajouter',
