@@ -3,26 +3,27 @@ import {
   sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword
-} from "firebase/auth";
+} from 'firebase/auth';
 import {collection, doc, getDoc, setDoc, updateDoc} from 'firebase/firestore'
-import {auth, db} from "src/firebase/index";
-import {ROLE} from "src/firebase/Types";
-import {getConsultant} from "src/firebase/Consultant";
-
+import {auth, db} from 'src/firebase/index';
+import {ROLE} from 'src/firebase/Types';
+import {getConsultant} from 'src/firebase/Consultant';
 
 
 export type Credentials = {
   email: string,
   password: string
 }
+
 export class HR {
-  firstName:string;
-  lastName:string;
+  firstName: string;
+  lastName: string;
   email: string;
   roles?: ROLE;
-  constructor (
-    firstName:string,
-    lastName:string,
+
+  constructor(
+    firstName: string,
+    lastName: string,
     email: string,
     roles: ROLE.HR
   ) {
@@ -32,10 +33,12 @@ export class HR {
     this.roles = ROLE.HR;
 
   }
+
   toString() {
     return this.firstName + ', ' + this.lastName + ', ' + this.email;
   }
 }
+
 const hrConverter = {
   toFirestore: (hr: HR) => {
     return {
@@ -54,22 +57,22 @@ const hrConverter = {
     );
   }
 };
-const getHR = async (uid:string) =>{
+const getHR = async (uid: string) => {
   const hrRef = doc(db, 'hrs', uid).withConverter(hrConverter);
   const hrSnap = await getDoc(hrRef);
-  if(hrSnap.exists()){
+  if (hrSnap.exists()) {
     return hrSnap.data();
   } else {
-    console.log("No such HR!");
+    console.log('No such HR!');
     return null;
   }
 }
-const createHRAccount = async (credentials: Credentials, hr:HR) => {
-  try{
+const createHRAccount = async (credentials: Credentials, hr: HR) => {
+  try {
     const userCredential = await createUserWithEmailAndPassword(auth, credentials.email, credentials.password);
-    // await sendEmailVerification(userCredential.user);
+    await sendEmailVerification(userCredential.user);
     hr.roles = ROLE.HR;
-    // await sendPasswordResetEmail(auth, credentials.email);
+    await sendPasswordResetEmail(auth, credentials.email);
     const usersRef = doc(db, 'hrs', userCredential.user.uid);
     await setDoc(usersRef, {...hr});
     const usersRoles = doc(db, 'roles', userCredential.user.uid);
@@ -81,7 +84,7 @@ const createHRAccount = async (credentials: Credentials, hr:HR) => {
 }
 
 const updateHR = async (uid: string, updatedData: any) => {
-  const hrRef = doc(db, "users", uid);
+  const hrRef = doc(db, 'users', uid);
 
   await updateDoc(hrRef, updatedData)
 }

@@ -133,11 +133,12 @@ async function applyToProject(projectName: string) {
   submit.value = true;
   const consultantId = store.uid;
   if (consultantId) {
-    setConsultantCurrentProject(consultantId, projectName).then(() => {
+    const project = await setConsultantCurrentProject(consultantId, projectName);
+    if (!project) {
+      success.value = false;
+    } else {
       success.value = true;
-    }).catch((error) => {
-      errorMessage.value = error;
-    })
+    }
   }
   console.log(store.uid);
 //   Todo : Let a consultant apply to a project, verifying if the consultant is available

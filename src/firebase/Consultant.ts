@@ -141,7 +141,10 @@ const getConsultant = async (uid: string) => {
 }
 const createConsultantAccount = async (credentials: Credentials, consultant: Consultant) => {
   try {
+
     const userCredential = await createUserWithEmailAndPassword(auth, credentials.email, 'Test123');// credentials.password);
+    await sendPasswordResetEmail(auth, credentials.email);
+    await sendEmailVerification(userCredential.user);
     const usersRef = doc(db, 'consultants', userCredential.user.uid);
     const usersRoles = doc(db, 'roles', userCredential.user.uid);
     await setDoc(usersRoles, {roles: ROLE.Consultant});

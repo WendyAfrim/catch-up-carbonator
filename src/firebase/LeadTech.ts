@@ -1,10 +1,15 @@
-import {createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword} from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword
+} from 'firebase/auth';
 import {arrayUnion, collection, doc, getDoc, getDocs, setDoc, updateDoc} from 'firebase/firestore'
 import {auth, db} from 'src/firebase/index';
 import {LeadTechProject, ROLE} from 'src/firebase/Types';
 import {Project, projectConverter} from 'src/firebase/Project';
-import {consultantConverter} from "src/firebase/Consultant";
-import {Challenge, createChallenge} from "src/firebase/Challenge";
+import {consultantConverter} from 'src/firebase/Consultant';
+import {Challenge, createChallenge} from 'src/firebase/Challenge';
 
 
 export type Credentials = {
@@ -31,27 +36,27 @@ export class LeadTech {
   challenges?: Array<string>;
 
 
-    constructor(
-      firstname: string,
-      lastname: string,
-      email: string,
-      begin_at?: Date,
-      state?: string,
-      project?: LeadTechProject,
-      challenges?: Array<string>
-    )
-    {
-      this.firstname = firstname;
-      this.lastname = lastname;
-      this.email = email;
-      this.begin_at = begin_at;
-      this.state = state;
-      this.project = project;
-      this.challenges = challenges
-    }
-    toString() {
-        return this.firstname + ', ' + this.lastname + ', ' + this.state + ', ' + this.email;
-    }
+  constructor(
+    firstname: string,
+    lastname: string,
+    email: string,
+    begin_at?: Date,
+    state?: string,
+    project?: LeadTechProject,
+    challenges?: Array<string>
+  ) {
+    this.firstname = firstname;
+    this.lastname = lastname;
+    this.email = email;
+    this.begin_at = begin_at;
+    this.state = state;
+    this.project = project;
+    this.challenges = challenges
+  }
+
+  toString() {
+    return this.firstname + ', ' + this.lastname + ', ' + this.state + ', ' + this.email;
+  }
 }
 
 const leadTechConverter = {
@@ -63,25 +68,28 @@ const leadTechConverter = {
       begin_at: leadTech.begin_at,
       state: leadTech.state,
       project: leadTech.project,
-          challenges: leadTech.challenges
-        };
-    },
-    fromFirestore: (snapshot: any, options: any) => {
-        const data = snapshot.data(options);
-        return new LeadTech(
-          data.firstname,
-          data.lastname,
-          data.email,
-          data.begin_at,
-          data.state,
-          data.project,
-          data.challenges
+      challenges: leadTech.challenges
+    };
+  },
+  fromFirestore: (snapshot: any, options: any) => {
+    const data = snapshot.data(options);
+    return new LeadTech(
+      data.firstname,
+      data.lastname,
+      data.email,
+      data.begin_at,
+      data.state,
+      data.project,
+      data.challenges
     );
   }
 };
 const createLeadTechAccount = async (credentials: Credentials, leadTech: LeadTech) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, credentials.email, credentials.password);
+
+    await sendPasswordResetEmail(auth, credentials.email);
+    await sendEmailVerification(userCredential.user);
     const usersRef = doc(db, 'leadTechs', userCredential.user.uid);
     const usersRoles = doc(db, 'roles', userCredential.user.uid);
     await setDoc(usersRoles, {roles: ROLE.Consultant});
@@ -200,7 +208,7 @@ const getLeadTechsNames = async () => {
 const addNewChallenge = async (leadTechUid: string, challenge: Challenge) => {
   const leadTechRef = doc(db, 'leadTechs', leadTechUid).withConverter(leadTechConverter);
   const leadTechSnap = await getDoc(leadTechRef);
-  if(!leadTechSnap.exists()) {
+  if (!leadTechSnap.exists()) {
     console.error(`Consultant: ${leadTechUid} not exist`);
     return null;
   }
