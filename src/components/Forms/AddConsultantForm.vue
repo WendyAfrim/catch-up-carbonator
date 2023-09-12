@@ -115,7 +115,7 @@ function submitConsultant() {
       firstname: consultantForm.firstname,
       lastname: consultantForm.lastname,
       email: consultantForm.email,
-      hired_as: consultantForm.hired_as,
+      position: consultantForm.hired_as,
       state: consultantForm.state,
       begin_at: new Date(consultantForm.begin_at)
     };

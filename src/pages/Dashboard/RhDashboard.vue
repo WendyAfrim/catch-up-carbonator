@@ -118,7 +118,7 @@
                   <div class="row">
                     <div class="col-12 col-md-6 q-pa-xs">
                       <q-td>
-                        <q-input outlined v-model="consultantsFilters.skills" label="Filtre Compétences"
+                        <q-input outlined v-model="consultantsFilters.skillsName" label="Filtre Compétences"
                                  dense></q-input>
                       </q-td>
                     </div>
@@ -369,7 +369,7 @@ const consultantsColumns = [
 const consultantsFilters = reactive({
   email: '',
   hired_as: '',
-  skills: '',
+  skillsName: '',
   level: '',
   state: '',
 })
